@@ -1,4 +1,4 @@
-package org.jinvestor.model;
+package org.jinvestor.model.entity;
 
 /**
  *

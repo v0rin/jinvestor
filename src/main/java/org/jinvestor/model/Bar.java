@@ -26,19 +26,19 @@ public class Bar {
 	public static final String CLOSE_COL_NAME = "close";
 	public static final String VOLUME_COL_NAME = "volume";
 
-	@Column(name="symbol")
+	@Column(name="symbol", columnDefinition="TEXT")
 	public String symbol;
-	@Column(name="datetime")
+	@Column(name="datetime", columnDefinition="TEXT")
 	public Instant dateTime;
-	@Column(name="open")
+	@Column(name="open", columnDefinition="REAL")
 	public Double open;
-	@Column(name="high")
+	@Column(name="high", columnDefinition="REAL")
 	public Double high;
-	@Column(name="low")
+	@Column(name="low", columnDefinition="REAL")
 	public Double low;
-	@Column(name="close")
+	@Column(name="close", columnDefinition="REAL")
 	public Double close;
-	@Column(name="volume")
+	@Column(name="volume", columnDefinition="INTEGER")
 	public Long volume;
 
 	public Bar(String symbol,
