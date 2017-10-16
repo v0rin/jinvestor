@@ -1,0 +1,12 @@
+# eclipse
+/.settings/
+/.classpath
+/.project
+
+# maven
+/target/
+
+
+# misc
+/datasource/
+/tmp/
