@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jinvestor.exception.AppRuntimeException;
 import org.simpleflatmapper.csv.CsvParser;
 
 import com.alexfu.sqlitequerybuilder.api.SQLiteQueryBuilder;
@@ -26,9 +25,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 */
 public class CsvToDbInserter implements IDbDataInserter<String> {
 
-	private static final Logger LOG = LogManager.getLogger();
-
-	private static int BATCH_SIZE = 1000;
+	private static final int BATCH_SIZE = 1000;
 
 	private Connection connection;
 	private String tableName;
@@ -85,7 +82,7 @@ public class CsvToDbInserter implements IDbDataInserter<String> {
 
 	private String[] getColumns(String[] csvColumns, Map<String, String> csvToDbColMappings) {
 		return Arrays.asList(csvColumns).stream()
-				.map(csvColName -> csvToDbColMappings.get(csvColName))
+				.map(csvToDbColMappings::get)
 				.collect(Collectors.toList())
 				.toArray(new String[csvToDbColMappings.size()]);
 	}
@@ -104,14 +101,14 @@ public class CsvToDbInserter implements IDbDataInserter<String> {
 				connection.createStatement().executeUpdate(insertSql);
 			}
 			catch (SQLException e) {
-				throw new RuntimeException("Could not add query to the batch; query=" + insertSql, e);
+				throw new AppRuntimeException("Could not add query to the batch; query=" + insertSql, e);
 			}
 		});
 		try {
 			connection.commit();
 		}
 		catch (SQLException e) {
-			throw new RuntimeException("Could not commit batch", e);
+			throw new AppRuntimeException("Could not commit batch", e);
 		}
 	}
 

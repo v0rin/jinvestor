@@ -18,7 +18,7 @@ import com.alexfu.sqlitequerybuilder.builder.CreateTableSegmentBuilder;
  *
  * @author Adam
  */
-public class EntityMetaData<T> implements IEntityMetaData<T> {
+public class EntityMetaData<T> implements IEntityMetaData {
 
 	private Class<T> clazz;
 

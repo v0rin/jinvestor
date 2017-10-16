@@ -17,7 +17,7 @@ public enum ConfigurationFactory {
 		return configuration;
 	}
 
-	public void set(IConfiguration configuration) {
+	public void initialize(IConfiguration configuration) {
 		if (configuration != null) {
 			throw new UnsupportedOperationException("Configuration already set. It is not allowed to override it");
 		}

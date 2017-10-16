@@ -3,18 +3,81 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.vorin.trading</groupId>
-	<artifactId>trading</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<groupId>org.jinvestor</groupId>
+	<artifactId>jinvestor</artifactId>
+	<version>0.1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>trading</name>
+	<name>jinvestor</name>
+	
+    <scm>
+        <connection>scm:git:git@github.com:v0rin/jinvestor.git</connection>
+        <developerConnection>scm:git:git@github.com:v0rin/jinvestor.git</developerConnection>
+        <url>https://github.com/v0rin/jinvestor.git</url>
+    </scm>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	    
 		<java.version>1.8</java.version>
 	</properties>
 
+    <profiles>
+		<profile>
+			<id>sonar-coverage</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+            <properties>
+                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+                <sonar.organization>v0rin-github</sonar.organization>
+                <sonar.login>6056795647fcf22c9a12f01167c63d0ab1f2bd81</sonar.login>
+            </properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.jacoco</groupId>
+							<artifactId>jacoco-maven-plugin</artifactId>
+							<version>0.7.8</version>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<configuration>
+							<append>true</append>
+						</configuration>
+						<executions>
+							<execution>
+								<id>agent-for-ut</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>agent-for-it</id>
+								<goals>
+									<goal>prepare-agent-integration</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>jacoco-site</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>report</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+        </profile>
+     </profiles>
+     
     <repositories>
 	    <repository>
 	      <id>jitpack</id>
@@ -106,10 +169,11 @@
 
 
 	</dependencies>
-	
+
 	<build>
 	   
 	    <plugins>
+	    
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
 	            <artifactId>maven-compiler-plugin</artifactId>
@@ -118,6 +182,11 @@
         		<source>${java.version}</source>
 		        <target>${java.version}</target>
 	            </configuration>
+            </plugin>
+            <plugin>
+			    <groupId>org.sonarsource.scanner.maven</groupId>
+			    <artifactId>sonar-maven-plugin</artifactId>
+			    <version>3.3.0.603</version>
             </plugin>
 	    </plugins>
 

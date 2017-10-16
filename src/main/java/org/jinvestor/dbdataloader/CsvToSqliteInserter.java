@@ -18,7 +18,7 @@ public class CsvToSqliteInserter implements IDbDataInserter<String>, AutoCloseab
 
 	private static final Logger LOG = LogManager.getLogger();
 
-	private static String URL_PREFIX = "jdbc:sqlite:";
+	private static final String URL_PREFIX = "jdbc:sqlite:";
 
 	private Connection connection;
 	private IDbDataInserter<String> csvToDbLoader;

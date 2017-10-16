@@ -34,7 +34,7 @@ public class CsvToSqliteInserterTest {
 
 	private final static char SEPARATOR = ',';
 
-	private IEntityMetaData<Bar> barEntityMetaData = EntityMetaDataFactory.get(Bar.class);
+	private IEntityMetaData barEntityMetaData = EntityMetaDataFactory.get(Bar.class);
 	private IDbDataInserter<String> loader;
 
 	@Before
