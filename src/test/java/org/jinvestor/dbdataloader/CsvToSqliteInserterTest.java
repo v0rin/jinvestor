@@ -28,9 +28,9 @@ public class CsvToSqliteInserterTest {
 	private static final Logger LOG = LogManager.getLogger();
 
 	private static final String DB_CONNECTION_STRING_PREFIX = "jdbc:sqlite:";
-	private final static String DB_PATH = "src/test/resources/com/jinvestor/dbdataloader/test.sqlite";
+	private final static String DB_PATH = "src/test/resources/org/jinvestor/dbdataloader/test.sqlite";
 	private final static String BARS_TABLE_NAME = "bars";
-	private final static String CSV_PATH = "src/test/resources/com/jinvestor/dbdataloader/with-headers.csv";
+	private final static String CSV_PATH = "src/test/resources/org/jinvestor/dbdataloader/with-headers.csv";
 
 	private final static char SEPARATOR = ',';
 
@@ -71,7 +71,7 @@ public class CsvToSqliteInserterTest {
 	public void shouldLoadCsvToDb() throws IOException {
 		// given
 		// when
-		final int iterCount = 5;
+		final int iterCount = 1;
 		Stopwatch sw = Stopwatch.createStarted();
 		for (int i = 0; i < iterCount; i++) {
 			loader.insert(CSV_PATH);
