@@ -1,11 +1,11 @@
-package org.vorin.trading.configuration;
+package org.jinvestor.configuration;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
 *
-* @author vorin
+* @author Adam
 */
 public class StaticJavaConfiguration implements IConfiguration {
 

@@ -1,8 +1,8 @@
-package org.vorin.trading.configuration;
+package org.jinvestor.configuration;
 
 /**
 *
-* @author vorin
+* @author Adam
 */
 public interface IConfiguration {
 

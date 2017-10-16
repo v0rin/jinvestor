@@ -1,10 +1,10 @@
-package org.vorin.trading.configuration;
+package org.jinvestor.configuration;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
 *
-* @author vorin
+* @author Adam
 */
 public enum ConfigurationFactory {
 

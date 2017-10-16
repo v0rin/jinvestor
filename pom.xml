@@ -15,6 +15,14 @@
 		<java.version>1.8</java.version>
 	</properties>
 
+    <repositories>
+	    <repository>
+	      <id>jitpack</id>
+	      <name>jitpack</name>
+	      <url>https://jitpack.io</url>
+	    </repository>
+	</repositories>
+    
 	<dependencies>
 	
 	    <!-- compile -->
@@ -38,10 +46,40 @@
 		    <artifactId>sql2o</artifactId>
 		    <version>1.6.0-RC3</version>
 		</dependency>
+        <dependency>
+            <groupId>com.github.alexfu</groupId>
+            <artifactId>SQLiteQueryBuilder</artifactId>
+            <version>0.3.0</version>
+        </dependency>
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.5</version>
+		</dependency>
+        <dependency>
+            <groupId>commons-dbutils</groupId>
+            <artifactId>commons-dbutils</artifactId>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.3</version>
+        </dependency>
 		<dependency>
 		    <groupId>org.jooq</groupId>
-		    <artifactId>jooq</artifactId>
-		    <version>3.10.1</version>
+		    <artifactId>jool</artifactId>
+		    <version>0.9.12</version>
+		</dependency>
+		<dependency>
+		    <groupId>javax.persistence</groupId>
+		    <artifactId>persistence-api</artifactId>
+		    <version>1.0.2</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-lang3</artifactId>
+		    <version>3.6</version>
 		</dependency>
 
         <!-- runtime -->
@@ -59,10 +97,29 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+		<dependency>
+		    <groupId>org.mockito</groupId>
+		    <artifactId>mockito-all</artifactId>
+		    <version>2.0.2-beta</version>
+		    <scope>test</scope>
+		</dependency>
+
 
 	</dependencies>
 	
 	<build>
+	   
+	    <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-compiler-plugin</artifactId>
+	            <version>3.7.0</version>
+	            <configuration>
+        		<source>${java.version}</source>
+		        <target>${java.version}</target>
+	            </configuration>
+            </plugin>
+	    </plugins>
 
 	</build>
 	
