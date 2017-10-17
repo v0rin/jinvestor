@@ -33,7 +33,7 @@ public class EtlJobTest {
 	@Test
 	public void testSimpleConversion() throws Exception {
 		// given
-		IReader<String[]> reader = spy(new CsvReader(INPUT_FILE_PATH, SEPARATOR));
+		IReader<String[]> reader = spy(new SimpleCsvReader(INPUT_FILE_PATH, SEPARATOR));
 		IWriter<String> writer = spy(new SimpleFileWriter(OUTPUT_FILE_PATH, false));
 		IEtlJob converter = new EtlJob<String[], String>(reader, new SimpleAdapter(), writer);
 

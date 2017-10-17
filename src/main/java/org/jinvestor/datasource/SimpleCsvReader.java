@@ -10,7 +10,7 @@ import org.simpleflatmapper.csv.CsvParser;
  *
  * @author Adam
  */
-public class CsvReader implements IReader<String[]> {
+public class SimpleCsvReader implements IReader<String[]> {
 
 	private String csvPath;
 	private char separator;
@@ -18,7 +18,7 @@ public class CsvReader implements IReader<String[]> {
 	private java.io.Reader csvFileReader;
 	private Stream<String[]> outgoingStream;
 
-	public CsvReader(String csvPath, char separator) {
+	public SimpleCsvReader(String csvPath, char separator) {
 		this.csvPath = csvPath;
 		this.separator = separator;
 	}

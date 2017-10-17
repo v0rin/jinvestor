@@ -55,10 +55,10 @@ public class CsvToSqliteTest {
 	@Test
 	public void simpleCsvToSqliteRawTest() throws SQLException, IOException {
 		// given
-		IReader<String[]> reader = new CsvReader(CSV_PATH, SEPARATOR);
-		IAdapter<String[], Object[]> adapter = new RawAdapter(BarTestUtil.getStandardCsvColumnsMappings(),
+		IReader<String[]> reader = new SimpleCsvReader(CSV_PATH, SEPARATOR);
+		IAdapter<String[], Object[]> adapter = new FastRawAdapter(BarTestUtil.getStandardCsvColumnsMappings(),
 															  barEntityMetaData);
-		IWriter<Object[]> writer = new RawDbWriter(DB_CONNECTION_STRING,
+		IWriter<Object[]> writer = new FastRawDbWriter(DB_CONNECTION_STRING,
 											  barEntityMetaData.getTableName(),
 											  barEntityMetaData.getColumns());
 

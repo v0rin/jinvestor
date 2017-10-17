@@ -1,5 +1,5 @@
 package org.jinvestor.datasource;
 
-public class RawDbWriterTest {
+public class FastRawDbWriterTest {
 
 }

@@ -16,7 +16,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  *
  * @author Adam
  */
-public class RawAdapter implements IAdapter<String[], Object[]> {
+public class FastRawAdapter implements IAdapter<String[], Object[]> {
 
 	private boolean isFirstTimeCalled = true;
 
@@ -24,7 +24,7 @@ public class RawAdapter implements IAdapter<String[], Object[]> {
 	private IEntityMetaData entityMetaData;
 
 
-	public RawAdapter(Map<String, String> inputToOutputColumnMappings, IEntityMetaData entityMetaData) {
+	public FastRawAdapter(Map<String, String> inputToOutputColumnMappings, IEntityMetaData entityMetaData) {
 		this.inputToOutputColumnMappings = inputToOutputColumnMappings;
 		this.entityMetaData = entityMetaData;
 	}

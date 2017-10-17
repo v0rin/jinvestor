@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  *
  * @author Adam
  */
-public class RawDbWriter implements IWriter<Object[]> {
+public class FastRawDbWriter implements IWriter<Object[]> {
 
 	private static final Logger LOG = LogManager.getLogger();
 
@@ -41,14 +41,14 @@ public class RawDbWriter implements IWriter<Object[]> {
 	private int insertCount;
 
 
-	public RawDbWriter(String dbConnectionString,
+	public FastRawDbWriter(String dbConnectionString,
 					String dbTableName,
 					String[] dbColumns) {
 		this(dbConnectionString, new Properties(), dbTableName, dbColumns);
 	}
 
 
-	public RawDbWriter(String dbConnectionString,
+	public FastRawDbWriter(String dbConnectionString,
 					Properties dbConnectionProperties,
 					String dbTableName,
 					String[] dbColumns) {
@@ -74,7 +74,8 @@ public class RawDbWriter implements IWriter<Object[]> {
 			throw new IOException(e);
 		}
 
-		incomingStream.filter(((Predicate<Object[]>)ArrayUtils::isEmpty).negate()).forEach(this::processRow);
+		incomingStream.filter(((Predicate<Object[]>)ArrayUtils::isEmpty).negate())
+					  .forEach(this::processRow);
 		flushBuffer();
 	}
 
