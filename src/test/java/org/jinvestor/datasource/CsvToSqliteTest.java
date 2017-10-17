@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jinvestor.model.Bar;
+import org.jinvestor.model.BarTestUtil;
 import org.jinvestor.model.entity.EntityMetaDataFactory;
 import org.jinvestor.model.entity.IEntityMetaData;
 import org.junit.After;
@@ -55,17 +56,17 @@ public class CsvToSqliteTest {
 	public void simpleCsvToSqliteRawTest() throws SQLException, IOException {
 		// given
 		IReader<String[]> reader = new CsvReader(CSV_PATH, SEPARATOR);
+		IAdapter<String[], Object[]> adapter = new RawAdapter(BarTestUtil.getStandardCsvColumnsMappings(),
+															  barEntityMetaData);
 		IWriter<Object[]> writer = new RawDbWriter(DB_CONNECTION_STRING,
 											  barEntityMetaData.getTableName(),
 											  barEntityMetaData.getColumns());
 
-
-
 		// when
-		final int iterCount = 8;
+		final int iterCount = 2;
 		Stopwatch sw = Stopwatch.createStarted();
 		for (int i = 0; i < iterCount; i++) {
-			IEtlJob converter = new EtlJob<String[], Object[]>(reader, new RawAdapter(), writer);
+			IEtlJob converter = new EtlJob<String[], Object[]>(reader, adapter, writer);
 			converter.execute();
 		}
 		LOG.info("elapsed=" + sw.elapsed());

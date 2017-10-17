@@ -7,8 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jinvestor.exception.AppRuntimeException;
@@ -56,13 +58,12 @@ public class RawDbWriter implements IWriter<Object[]> {
 		this.dbConnectionProperties = dbConnectionProperties;
 		this.dbTableName = dbTableName;
 		this.dbColumns = dbColumns;
-
-		this.buffer = new ArrayList<>();
 	}
 
 
 	@Override
 	public void write(Stream<Object[]> incomingStream) throws IOException {
+		this.buffer = new ArrayList<>();
 		try {
 			connection = DriverManager.getConnection(dbConnectionString, dbConnectionProperties);
 			LOG.info("Connection to the database[" + dbConnectionString + "] has been established.");
@@ -73,7 +74,7 @@ public class RawDbWriter implements IWriter<Object[]> {
 			throw new IOException(e);
 		}
 
-		incomingStream.forEach(this::processRow);
+		incomingStream.filter(((Predicate<Object[]>)ArrayUtils::isEmpty).negate()).forEach(this::processRow);
 		flushBuffer();
 	}
 
