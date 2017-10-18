@@ -18,7 +18,7 @@ import com.alexfu.sqlitequerybuilder.builder.CreateTableSegmentBuilder;
  *
  * @author Adam
  */
-public class EntityMetaData<T> implements IEntityMetaData {
+public class EntityMetaData<T> implements IEntityMetaData<T> {
 
 	private Class<T> clazz;
 
@@ -121,5 +121,11 @@ public class EntityMetaData<T> implements IEntityMetaData {
 					"Annotation columnDefinition empty or null for field[" + field.getName() + "]");
 		}
 		return columnDefinition;
+	}
+
+
+	@Override
+	public Class<T> getClazz() {
+		return clazz;
 	}
 }

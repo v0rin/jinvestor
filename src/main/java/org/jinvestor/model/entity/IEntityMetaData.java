@@ -4,7 +4,9 @@ package org.jinvestor.model.entity;
  *
  * @author Adam
  */
-public interface IEntityMetaData {
+public interface IEntityMetaData<T> {
+
+	Class<T> getClazz();
 
 	String getTableName();
 

@@ -15,7 +15,7 @@ import org.junit.Test;
 
 public class EtlJobTest {
 
-	private static final String ROOT_PATH = "src/test/resources/com/jinvestor/datasource/etl-job-test/";
+	private static final String ROOT_PATH = "src/test/resources/org/jinvestor/datasource/etl-job-test/";
 	private static final String INPUT_FILE_PATH = ROOT_PATH + "input.csv";
 	private static final String EXPECTED_OUTPUT_FILE_PATH = ROOT_PATH + "expected-output.csv";
 	private static final String OUTPUT_FILE_PATH = "output.csv";
@@ -33,12 +33,12 @@ public class EtlJobTest {
 	@Test
 	public void testSimpleConversion() throws Exception {
 		// given
-		IReader<String[]> reader = spy(new SimpleCsvReader(INPUT_FILE_PATH, SEPARATOR));
+		IReader<String[]> reader = spy(new CsvReader(INPUT_FILE_PATH, SEPARATOR));
 		IWriter<String> writer = spy(new SimpleFileWriter(OUTPUT_FILE_PATH, false));
-		IEtlJob converter = new EtlJob<String[], String>(reader, new SimpleAdapter(), writer);
+		IEtlJob etlJob = new EtlJob<String[], String>(reader, new TestConverter(), writer);
 
 		// when
-		converter.execute();
+		etlJob.execute();
 
 		// then
 		verify(reader).close();
@@ -47,7 +47,7 @@ public class EtlJobTest {
 					 FileUtils.readLines(new File(OUTPUT_FILE_PATH), CHARSET));
 	}
 
-	private static class SimpleAdapter implements IAdapter<String[], String> {
+	private static class TestConverter implements IConverter<String[], String> {
 
 		@Override
 		public String apply(String[] strings) {

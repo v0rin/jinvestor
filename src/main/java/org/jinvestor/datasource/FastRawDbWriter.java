@@ -21,6 +21,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * TODO (AF) rollback if fails??
+ * https://commons.apache.org/proper/commons-dbutils/apidocs/
  * Inserts a stream of Objects into a database
  *
  * @author Adam

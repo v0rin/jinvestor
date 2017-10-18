@@ -14,7 +14,7 @@ public class EntityMetaDataTest {
 	@Test
 	public void test() {
 		// TODO (AF) as below + negative cases
-		IEntityMetaData barMetaData = EntityMetaDataFactory.get(Bar.class);
+		IEntityMetaData<Bar> barMetaData = EntityMetaDataFactory.get(Bar.class);
 		LOG.debug(barMetaData.getTableName());
 		LOG.debug(Arrays.asList(barMetaData.getColumns()));
 		LOG.debug(barMetaData.getCreateTableSql());

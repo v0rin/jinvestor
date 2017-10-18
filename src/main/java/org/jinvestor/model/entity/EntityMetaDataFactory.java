@@ -10,7 +10,7 @@ public class EntityMetaDataFactory {
 		throw new AssertionError("This class should not be instantiated");
 	}
 
-	public static <T> IEntityMetaData get(Class<T> clazz) {
+	public static <T> IEntityMetaData<T> get(Class<T> clazz) {
 		return new EntityMetaData<>(clazz);
 	}
 }

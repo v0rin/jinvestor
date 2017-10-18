@@ -17,24 +17,24 @@ import org.jinvestor.ext.SqlJool;
  *
  * @author Adam
  */
-public class DbReader<T> implements IReader<T> {
+public class FastRawDbReader<T> implements IReader<T> {
 
 	private static final Logger LOG = LogManager.getLogger();
 
 	private String dbConnectionString;
 	private Properties dbConnectionProperties;
 	private String sqlQuery;
-	private Function<ResultSet, T> rowToPojoConverter;
+	private Function<ResultSet, T> rowToEntityConverter;
 
 
-	public DbReader(String dbConnectionString,
+	public FastRawDbReader(String dbConnectionString,
 			 		String sqlQuery,
-			 		Function<ResultSet, T> rowToPojoConverter) {
-		this(dbConnectionString, new Properties(), sqlQuery, rowToPojoConverter);
+			 		Function<ResultSet, T> rowToEntityConverter) {
+		this(dbConnectionString, new Properties(), sqlQuery, rowToEntityConverter);
 	}
 
 
-	public DbReader(String dbConnectionString,
+	public FastRawDbReader(String dbConnectionString,
 					Properties dbConnectionProperties,
 					String sqlQuery,
 					Function<ResultSet, T> rowToPojoConverter) {
@@ -42,7 +42,7 @@ public class DbReader<T> implements IReader<T> {
 		this.dbConnectionString = dbConnectionString;
 		this.dbConnectionProperties = dbConnectionProperties;
 		this.sqlQuery = sqlQuery;
-		this.rowToPojoConverter = rowToPojoConverter;
+		this.rowToEntityConverter = rowToPojoConverter;
 	}
 
 
@@ -58,7 +58,7 @@ public class DbReader<T> implements IReader<T> {
 		}
 
 		try {
-			return SqlJool.seq(connection.prepareStatement(sqlQuery), rowToPojoConverter).stream();
+			return SqlJool.seq(connection.prepareStatement(sqlQuery), rowToEntityConverter).stream();
 		}
 		catch (SQLException e) {
 			throw new IOException("Could not execute sqlQuery=" + sqlQuery, e);

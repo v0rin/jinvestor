@@ -11,12 +11,12 @@ import java.util.Objects;
 public class EtlJob<T, R> implements IEtlJob {
 
 	private IReader<T> reader;
-	private IAdapter<T, R> adapter;
+	private IConverter<T, R> converter;
 	private IWriter<R> writer;
 
-	public EtlJob(IReader<T> reader, IAdapter<T, R> adapter, IWriter<R> writer) {
+	public EtlJob(IReader<T> reader, IConverter<T, R> converter, IWriter<R> writer) {
 		this.reader = reader;
-		this.adapter = adapter;
+		this.converter = converter;
 		this.writer = writer;
 	}
 
@@ -25,7 +25,7 @@ public class EtlJob<T, R> implements IEtlJob {
 		try(IReader<T> tmpReaderRef = reader;
 			IWriter<R> tempWriterRef = writer) {
 
-			writer.write(reader.stream().map(adapter).filter(Objects::nonNull));
+			writer.write(reader.stream().map(converter).filter(Objects::nonNull));
 		}
 		catch (Exception e) {
 			throw new IOException(e);

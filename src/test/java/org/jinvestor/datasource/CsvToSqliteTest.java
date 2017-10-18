@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,7 +37,7 @@ public class CsvToSqliteTest {
 
 	private final static char SEPARATOR = ',';
 
-	private IEntityMetaData barEntityMetaData = EntityMetaDataFactory.get(Bar.class);
+	private IEntityMetaData<Bar> barEntityMetaData = EntityMetaDataFactory.get(Bar.class);
 
 
 	@Before
@@ -55,19 +58,35 @@ public class CsvToSqliteTest {
 	@Test
 	public void simpleCsvToSqliteRawTest() throws SQLException, IOException {
 		// given
-		IReader<String[]> reader = new SimpleCsvReader(CSV_PATH, SEPARATOR);
-		IAdapter<String[], Object[]> adapter = new FastRawAdapter(BarTestUtil.getStandardCsvColumnsMappings(),
-															  barEntityMetaData);
+		IReader<String[]> reader = new CsvReader(CSV_PATH, SEPARATOR);
+//		IConverter<String[], Object[]> converter = new FastRawStringArrToObjectArrConverter(
+//															BarTestUtil.getStandardCsvColumnsMappings(),
+//															barEntityMetaData);
+		DateTimeFormatter fromDateTimeFormatter = new DateTimeFormatterBuilder()
+		        .appendPattern("yyyy-MM-dd")
+		        .optionalStart()
+		        .appendPattern(" HH:mm")
+		        .optionalEnd()
+		        .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+		        .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+		        .toFormatter();
+		DateTimeFormatter toDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+		IConverter<String, String> dateTimeConverter = new DateTimeConverter(fromDateTimeFormatter,
+																			 toDateTimeFormatter);
+		IConverter<String[], Object[]> converter = new BarFastRawStringArrToObjectArrConverter(
+														BarTestUtil.getStandardCsvColumnsMappings(),
+														barEntityMetaData,
+														dateTimeConverter);
 		IWriter<Object[]> writer = new FastRawDbWriter(DB_CONNECTION_STRING,
 											  barEntityMetaData.getTableName(),
 											  barEntityMetaData.getColumns());
 
 		// when
-		final int iterCount = 2;
+		final int iterCount = 1;
 		Stopwatch sw = Stopwatch.createStarted();
 		for (int i = 0; i < iterCount; i++) {
-			IEtlJob converter = new EtlJob<String[], Object[]>(reader, adapter, writer);
-			converter.execute();
+			IEtlJob etlJob = new EtlJob<String[], Object[]>(reader, converter, writer);
+			etlJob.execute();
 		}
 		LOG.info("elapsed=" + sw.elapsed());
 

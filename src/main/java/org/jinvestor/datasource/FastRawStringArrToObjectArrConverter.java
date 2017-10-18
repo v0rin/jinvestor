@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.jinvestor.model.entity.IEntityMetaData;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -16,15 +15,17 @@ import static com.google.common.base.Preconditions.checkArgument;
  *
  * @author Adam
  */
-public class FastRawAdapter implements IAdapter<String[], Object[]> {
+public class FastRawStringArrToObjectArrConverter implements IConverter<String[], Object[]> {
 
 	private boolean isFirstTimeCalled = true;
 
 	private Map<String, String> inputToOutputColumnMappings;
-	private IEntityMetaData entityMetaData;
+	private IEntityMetaData<?> entityMetaData;
 
 
-	public FastRawAdapter(Map<String, String> inputToOutputColumnMappings, IEntityMetaData entityMetaData) {
+	public FastRawStringArrToObjectArrConverter(Map<String,
+											  String> inputToOutputColumnMappings,
+											  IEntityMetaData<?> entityMetaData) {
 		this.inputToOutputColumnMappings = inputToOutputColumnMappings;
 		this.entityMetaData = entityMetaData;
 	}
@@ -33,13 +34,20 @@ public class FastRawAdapter implements IAdapter<String[], Object[]> {
 	@Override
 	public Object[] apply(String[] strings) {
 		if (isFirstTimeCalled) {
-			String[] entityColumns = entityMetaData.getColumns();
-			validateMappings(strings, inputToOutputColumnMappings, entityColumns);
-			validateColumnOrder(strings, inputToOutputColumnMappings, entityColumns);
+			validate(strings, inputToOutputColumnMappings, entityMetaData);
 			isFirstTimeCalled = false;
 			return new Object[0];
 		}
 		return strings;
+	}
+
+
+	private void validate(String[] strings,
+						  Map<String, String> inputToOutputColumnMappings,
+						  IEntityMetaData<?> entityMetaData) {
+		String[] entityColumns = entityMetaData.getColumns();
+		validateMappings(strings, inputToOutputColumnMappings, entityColumns);
+		validateColumnOrder(strings, inputToOutputColumnMappings, entityColumns);
 	}
 
 
@@ -70,9 +78,9 @@ public class FastRawAdapter implements IAdapter<String[], Object[]> {
 											.map(inputToOutputColumnMappings::get)
 											.collect(Collectors.toList());
 		if (!mappedInputColumns.equals(Arrays.asList(entityColumns))) {
-			throw new NotImplementedException("Input columns in different order than entity columms. " +
+			throw new UnsupportedOperationException("Input columns in different order than entity columms. " +
 											  getAsString(inputColumns, inputToOutputColumnMappings, entityColumns) +
-											  ". This is not supported yet");
+											  ". This is not supported in this fast implementation");
 		}
 	}
 

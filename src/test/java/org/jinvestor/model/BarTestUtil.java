@@ -15,7 +15,7 @@ public class BarTestUtil {
 	public static Map<String, String> getStandardCsvColumnsMappings() {
 		Map<String, String> inputToOutputColumnMappings = new HashMap<>();
 		inputToOutputColumnMappings.put("Symbol", "symbol");
-		inputToOutputColumnMappings.put("Date", "datetime");
+		inputToOutputColumnMappings.put("Date", "timestamp");
 		inputToOutputColumnMappings.put("Open", "open");
 		inputToOutputColumnMappings.put("High", "high");
 		inputToOutputColumnMappings.put("Low", "low");
