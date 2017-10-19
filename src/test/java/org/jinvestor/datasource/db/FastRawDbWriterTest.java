@@ -1,4 +1,4 @@
-package org.jinvestor.datasource;
+package org.jinvestor.datasource.db;
 
 public class FastRawDbWriterTest {
 

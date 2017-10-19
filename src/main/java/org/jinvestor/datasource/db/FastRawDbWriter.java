@@ -1,4 +1,4 @@
-package org.jinvestor.datasource;
+package org.jinvestor.datasource.db;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jinvestor.datasource.IWriter;
 import org.jinvestor.exception.AppRuntimeException;
 
 import com.alexfu.sqlitequerybuilder.api.SQLiteQueryBuilder;
@@ -30,7 +31,7 @@ public class FastRawDbWriter implements IWriter<Object[]> {
 
 	private static final Logger LOG = LogManager.getLogger();
 
-	private static final int BATCH_SIZE = 1000;
+	private static final int DEFAULT_BATCH_SIZE = 1000;
 
 	private String dbConnectionString;
 	private Properties dbConnectionProperties;
@@ -39,26 +40,37 @@ public class FastRawDbWriter implements IWriter<Object[]> {
 	private Connection connection;
 	private String[] dbColumns;
 	private List<Object[]> buffer;
+	private int batchSize;
 	private int insertCount;
 
 
 	public FastRawDbWriter(String dbConnectionString,
-					String dbTableName,
-					String[] dbColumns) {
-		this(dbConnectionString, new Properties(), dbTableName, dbColumns);
+						   String dbTableName,
+						   String[] dbColumns) {
+		this(dbConnectionString, new Properties(), dbTableName, dbColumns, DEFAULT_BATCH_SIZE);
 	}
 
 
 	public FastRawDbWriter(String dbConnectionString,
-					Properties dbConnectionProperties,
-					String dbTableName,
-					String[] dbColumns) {
+						   String dbTableName,
+						   String[] dbColumns,
+						   int batchSize) {
+		this(dbConnectionString, new Properties(), dbTableName, dbColumns, batchSize);
+	}
+
+
+	public FastRawDbWriter(String dbConnectionString,
+						   Properties dbConnectionProperties,
+						   String dbTableName,
+						   String[] dbColumns,
+						   int batchSize) {
 		checkArgument(dbColumns != null, "dbColumns needs to be set");
 
 		this.dbConnectionString = dbConnectionString;
 		this.dbConnectionProperties = dbConnectionProperties;
 		this.dbTableName = dbTableName;
 		this.dbColumns = dbColumns;
+		this.batchSize = batchSize;
 	}
 
 
@@ -83,7 +95,7 @@ public class FastRawDbWriter implements IWriter<Object[]> {
 
 	private void processRow(Object[] row) {
 		buffer.add((Object[])row);
-		if (buffer.size() == BATCH_SIZE) {
+		if (buffer.size() == batchSize) {
 			flushBuffer();
 		}
 	}

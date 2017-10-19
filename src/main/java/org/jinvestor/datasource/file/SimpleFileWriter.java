@@ -1,4 +1,4 @@
-package org.jinvestor.datasource;
+package org.jinvestor.datasource.file;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.stream.Stream;
 
+import org.jinvestor.datasource.IWriter;
 import org.jinvestor.exception.AppRuntimeException;
 
 /**
@@ -21,7 +22,7 @@ public class SimpleFileWriter implements IWriter<String> {
 
 	private String filePath;
 
-	SimpleFileWriter(String filePath, boolean append) throws IOException {
+	public SimpleFileWriter(String filePath, boolean append) throws IOException {
 		this.filePath = filePath;
 		if (!new File(filePath).createNewFile() && !append) {
 			throw new IOException("File [" + filePath + "] already exists");

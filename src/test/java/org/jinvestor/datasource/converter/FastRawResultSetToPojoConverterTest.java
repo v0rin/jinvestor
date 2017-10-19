@@ -1,4 +1,4 @@
-package org.jinvestor.datasource;
+package org.jinvestor.datasource.converter;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -17,7 +17,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jinvestor.model.Bar;
+import org.jinvestor.datasource.converter.FastRawResultSetToPojoConverter;
 import org.jinvestor.model.entity.EntityMetaDataFactory;
 import org.jinvestor.model.entity.IEntityMetaData;
 import org.junit.Before;
@@ -27,16 +27,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import com.alexfu.sqlitequerybuilder.api.SQLiteQueryBuilder;
-import com.google.common.base.Stopwatch;
-import com.google.common.util.concurrent.AtomicDouble;
-
 public class FastRawResultSetToPojoConverterTest {
 
 	private static final Logger LOG = LogManager.getLogger();
 
-	private static final String TEST_RES_PATH = "src/test/resources/org/jinvestor/datasource/csv-to-sqlite-test/";
-	private static final String DB_PATH = TEST_RES_PATH + "test.sqlite";
+	private static final String TEST_RES_PATH = "datasource/sqlite/";
+	private static final String DB_PATH = TEST_RES_PATH + "test-big.sqlite";
 	private static final String DB_CONNECTION_STRING_PREFIX = "jdbc:sqlite:";
 	private static final String DB_CONNECTION_STRING = DB_CONNECTION_STRING_PREFIX + DB_PATH;
 
@@ -71,32 +67,6 @@ public class FastRawResultSetToPojoConverterTest {
 		when(resultSet.getObject(2)).thenReturn(expectedTestEntity.price);
 
 		converter = new FastRawResultSetToPojoConverter<TestEntity>(TestEntity.class);
-	}
-
-
-	@Test
-	public void shouldReadBarPojoFromSqlite() throws Exception {
-		FastRawResultSetToPojoConverter<Bar> barConverter =
-				new FastRawResultSetToPojoConverter<Bar>(Bar.class);
-		IEntityMetaData<Bar> entityMetaData = EntityMetaDataFactory.get(Bar.class);
-
-		String selectQuery = SQLiteQueryBuilder
-			.select("*")
-			.from(entityMetaData.getTableName())
-			.build();
-
-		try (IReader<Bar> dbReader = new FastRawDbReader<Bar>(DB_CONNECTION_STRING,
-															  selectQuery,
-															  barConverter)) {
-			Stopwatch sw = Stopwatch.createStarted();
-			AtomicDouble d = new AtomicDouble();
-//			dbReader.stream().forEach(LOG::info);
-			dbReader.stream().forEach(bar -> {
-				d.addAndGet(bar.getOpen());
-			});
-			LOG.info("d=" + d.get());
-			LOG.info("elapsed=" + sw.elapsed());
-		}
 	}
 
 

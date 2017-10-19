@@ -1,18 +1,19 @@
-package org.jinvestor.datasource;
+package org.jinvestor.datasource.converter;
 
 import java.util.Map;
 
+import org.jinvestor.datasource.IConverter;
 import org.jinvestor.model.entity.IEntityMetaData;
 
 /**
  *
  * @author Adam
  */
-public class BarFastRawStringArrToObjectArrConverter extends FastRawStringArrToObjectArrConverter {
+public class BarToDbRowConverter extends FastRawCsvToDbRowConverter {
 
 	private IConverter<String, String> dateTimeConverter;
 
-	public BarFastRawStringArrToObjectArrConverter(Map<String, String> inputToOutputColumnMappings,
+	public BarToDbRowConverter(Map<String, String> inputToOutputColumnMappings,
 			  									   IEntityMetaData<?> entityMetaData,
 			  									   IConverter<String, String> dateTimeConverter) {
 		super(inputToOutputColumnMappings, entityMetaData);

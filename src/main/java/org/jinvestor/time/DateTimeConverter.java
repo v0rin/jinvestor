@@ -1,7 +1,9 @@
-package org.jinvestor.datasource;
+package org.jinvestor.time;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import org.jinvestor.datasource.IConverter;
 
 /**
  *

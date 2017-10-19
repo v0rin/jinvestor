@@ -1,4 +1,4 @@
-package org.jinvestor.datasource;
+package org.jinvestor.datasource.db;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -11,13 +11,14 @@ import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jinvestor.datasource.IReader;
 import org.jinvestor.ext.SqlJool;
 
 /**
  *
  * @author Adam
  */
-public class FastRawDbReader<T> implements IReader<T> {
+public class DbReader<T> implements IReader<T> {
 
 	private static final Logger LOG = LogManager.getLogger();
 
@@ -26,15 +27,17 @@ public class FastRawDbReader<T> implements IReader<T> {
 	private String sqlQuery;
 	private Function<ResultSet, T> rowToEntityConverter;
 
+	private Connection connection;
 
-	public FastRawDbReader(String dbConnectionString,
+
+	public DbReader(String dbConnectionString,
 			 		String sqlQuery,
 			 		Function<ResultSet, T> rowToEntityConverter) {
 		this(dbConnectionString, new Properties(), sqlQuery, rowToEntityConverter);
 	}
 
 
-	public FastRawDbReader(String dbConnectionString,
+	public DbReader(String dbConnectionString,
 					Properties dbConnectionProperties,
 					String sqlQuery,
 					Function<ResultSet, T> rowToPojoConverter) {
@@ -46,12 +49,11 @@ public class FastRawDbReader<T> implements IReader<T> {
 	}
 
 
-	private Connection connection;
 	@Override
 	public Stream<T> stream() throws IOException {
 		try {
 			connection = DriverManager.getConnection(dbConnectionString, dbConnectionProperties);
-			LOG.info("Connection to the database[" + dbConnectionString + "] has been established.");
+//			LOG.info("Connection to the database[" + dbConnectionString + "] has been established.");
 		}
 		catch (SQLException e) {
 			throw new IOException(e);

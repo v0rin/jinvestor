@@ -1,4 +1,4 @@
-package org.jinvestor.datasource;
+package org.jinvestor.datasource.converter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.jinvestor.datasource.IConverter;
 import org.jinvestor.model.entity.IEntityMetaData;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -15,7 +16,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  *
  * @author Adam
  */
-public class FastRawStringArrToObjectArrConverter implements IConverter<String[], Object[]> {
+public class FastRawCsvToDbRowConverter implements IConverter<String[], Object[]> {
 
 	private boolean isFirstTimeCalled = true;
 
@@ -23,9 +24,9 @@ public class FastRawStringArrToObjectArrConverter implements IConverter<String[]
 	private IEntityMetaData<?> entityMetaData;
 
 
-	public FastRawStringArrToObjectArrConverter(Map<String,
-											  String> inputToOutputColumnMappings,
-											  IEntityMetaData<?> entityMetaData) {
+	public FastRawCsvToDbRowConverter(Map<String,
+									  String> inputToOutputColumnMappings,
+									  IEntityMetaData<?> entityMetaData) {
 		this.inputToOutputColumnMappings = inputToOutputColumnMappings;
 		this.entityMetaData = entityMetaData;
 	}

@@ -1,9 +1,10 @@
-package org.jinvestor.datasource;
+package org.jinvestor.datasource.file;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.stream.Stream;
 
+import org.jinvestor.datasource.IReader;
 import org.simpleflatmapper.csv.CsvParser;
 
 /**
