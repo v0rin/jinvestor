@@ -43,7 +43,7 @@ public class DbReadPerformanceTest {
 	private static final String DB_CONNECTION_STRING_PREFIX = "jdbc:sqlite:";
 	private static final String DB_CONNECTION_STRING = DB_CONNECTION_STRING_PREFIX + DB_PATH;
 
-	private static final int iterCount = 50;
+	private static final int iterCount = 1;
 
 	private IEntityMetaData<Bar> entityMetaData;
 	private String selectQuery;
@@ -74,16 +74,41 @@ public class DbReadPerformanceTest {
 
 	@Test
 	public void shouldReadBarPojoFromSqliteUsingBasicRowProcessor() throws Exception {
-		IConverter<ResultSet, Bar> barConverter = new ResultSetToBarDbUtilsConverter(Bar.class);
-		readAndTimeExecution(barConverter);
+//		IConverter<ResultSet, Bar> barConverter = new ResultSetToBarDbUtilsConverter(Bar.class);
+//		readAndTimeExecution(barConverter);
+		Stopwatch sw = Stopwatch.createStarted();
+		for (int i = 0; i < iterCount; i++) {
+			IConverter<ResultSet, Bar> barConverter = new ResultSetToBarDbUtilsConverter(Bar.class);
+			try (IReader<Bar> dbReader = new DbReader<>(DB_CONNECTION_STRING, selectQuery, barConverter)) {
+				dbReader.stream().collect(Collectors.toList());
+			}
+		}
+		LOG.info("total read time=" + sw.elapsed() + " [{}]", ResultSetToBarDbUtilsConverter.class.getName());
+	}
+
+
+	@Test
+	public void dbUtilsTest() throws SQLException {
+		Stopwatch sw = Stopwatch.createStarted();
+		for (int i = 0; i < iterCount; i++) {
+			ResultSetHandler<List<Bar>> rsh = new BeanListHandler<>(Bar.class);
+			try (Connection connection = DriverManager.getConnection(DB_CONNECTION_STRING)) {
+				QueryRunner run = new QueryRunner();
+				List<Bar> bars = run.query(connection, selectQuery, rsh);
+//				LOG.info("Read time=" + sw.elapsed() + " [{}]", rsh.getClass().getName());
+//				LOG.info("bar count=" + bars.size());
+//				LOG.info(bars.get(0));
+			}
+		}
+		LOG.info("total read time=" + sw.elapsed() + " [{}]", BeanListHandler.class.getName());
 	}
 
 
 	@Test
 	public void dbUtilsTest2() throws Exception {
-		ResultSetHandler<List<Bar>> rsh = new BeanListHandler<>(Bar.class);
 		Stopwatch sw = Stopwatch.createStarted();
 		for (int i = 0; i < iterCount; i++) {
+			ResultSetHandler<List<Bar>> rsh = new BeanListHandler<>(Bar.class);
 			try (DbUtilsReader<Bar> dbReader = new DbUtilsReader<>(DB_CONNECTION_STRING, selectQuery, rsh)) {
 				readAndTimeExecution(() -> {
 					try {
@@ -95,24 +120,7 @@ public class DbReadPerformanceTest {
 					rsh.getClass().getName());
 			}
 		}
-		LOG.info("total read time=" + sw.elapsed() + " [{}]", rsh.getClass().getName());
-	}
-
-
-	@Test
-	public void dbUtilsTest() throws SQLException {
-		ResultSetHandler<List<Bar>> rsh = new BeanListHandler<>(Bar.class);
-		Stopwatch sw = Stopwatch.createStarted();
-		for (int i = 0; i < iterCount; i++) {
-			try (Connection connection = DriverManager.getConnection(DB_CONNECTION_STRING)) {
-				QueryRunner run = new QueryRunner();
-				List<Bar> bars = run.query(connection, selectQuery, rsh);
-//				LOG.info("Read time=" + sw.elapsed() + " [{}]", rsh.getClass().getName());
-//				LOG.info("bar count=" + bars.size());
-//				LOG.info(bars.get(0));
-			}
-		}
-		LOG.info("total read time=" + sw.elapsed() + " [{}]", rsh.getClass().getName());
+		LOG.info("total read time=" + sw.elapsed() + " [{}]", DbUtilsReader.class.getName());
 	}
 
 
