@@ -79,7 +79,7 @@ public class FastRawDbWriter implements IWriter<Object[]> {
 		this.buffer = new ArrayList<>();
 		try {
 			connection = DriverManager.getConnection(dbConnectionString, dbConnectionProperties);
-			LOG.info("Connection to the database[" + dbConnectionString + "] has been established.");
+			LOG.debug(() -> "Connection to the database[" + dbConnectionString + "] has been established.");
 			connection.setAutoCommit(false);
 			insertCount = 0;
 		}
@@ -132,6 +132,6 @@ public class FastRawDbWriter implements IWriter<Object[]> {
 	@Override
 	public void close() throws Exception {
 		connection.close();
-		LOG.debug("Inserted {} rows", insertCount);
+		LOG.debug(() -> "Inserted " + insertCount + " rows");
 	}
 }

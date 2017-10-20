@@ -16,11 +16,11 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 @Table(name="bars")
 public class Bar {
 
-	@Column(name="timestamp", columnDefinition="TEXT")
-	public Timestamp timestamp;
-
 	@Column(name="symbol", columnDefinition="TEXT")
 	public String symbol;
+
+	@Column(name="timestamp", columnDefinition="TEXT")
+	public Timestamp timestamp;
 
 	@Column(name="open", columnDefinition="REAL")
 	public Double open;
@@ -56,7 +56,6 @@ public class Bar {
 		this.close = close;
 		this.volume = volume;
 	}
-
 
 
 	public String getSymbol() {
