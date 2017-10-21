@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.jinvestor.datasource.IConverter;
+import org.jinvestor.model.entity.EntityMetaDataFactory;
 import org.jinvestor.model.entity.IEntityMetaData;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -26,9 +27,9 @@ public class FastRawCsvToDbRowConverter implements IConverter<String[], Object[]
 
 	public FastRawCsvToDbRowConverter(Map<String,
 									  String> inputToOutputColumnMappings,
-									  IEntityMetaData<?> entityMetaData) {
+									  Class<?> entityClass) {
 		this.inputToOutputColumnMappings = inputToOutputColumnMappings;
-		this.entityMetaData = entityMetaData;
+		this.entityMetaData = EntityMetaDataFactory.get(entityClass);
 	}
 
 

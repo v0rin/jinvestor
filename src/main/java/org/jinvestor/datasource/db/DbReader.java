@@ -53,7 +53,7 @@ public class DbReader<T> implements IReader<T> {
 	public Stream<T> stream() throws IOException {
 		try {
 			connection = DriverManager.getConnection(dbConnectionString, dbConnectionProperties);
-//			LOG.debug(() -> "Connection to the database[" + dbConnectionString + "] has been established.");
+			LOG.debug(() -> "Connection to the database[" + dbConnectionString + "] has been established.");
 		}
 		catch (SQLException e) {
 			throw new IOException(e);

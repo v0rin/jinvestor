@@ -3,23 +3,21 @@ package org.jinvestor.datasource.converter;
 import java.util.Map;
 
 import org.jinvestor.datasource.IConverter;
-import org.jinvestor.model.entity.IEntityMetaData;
+import org.jinvestor.model.Bar;
 
 /**
  *
  * @author Adam
  */
-public class BarToDbRowConverter extends FastRawCsvToDbRowConverter {
+public class CsvBarToDbRowConverter extends FastRawCsvToDbRowConverter {
 
 	private IConverter<String, String> dateTimeConverter;
 
-	public BarToDbRowConverter(Map<String, String> inputToOutputColumnMappings,
-			  									   IEntityMetaData<?> entityMetaData,
-			  									   IConverter<String, String> dateTimeConverter) {
-		super(inputToOutputColumnMappings, entityMetaData);
+	public CsvBarToDbRowConverter(Map<String, String> inputToOutputColumnMappings,
+			  				   IConverter<String, String> dateTimeConverter) {
+		super(inputToOutputColumnMappings, Bar.class);
 		this.dateTimeConverter = dateTimeConverter;
 	}
-
 
 	@Override
 	public Object[] apply(String[] strings) {

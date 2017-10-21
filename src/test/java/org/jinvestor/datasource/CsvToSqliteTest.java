@@ -11,11 +11,11 @@ import java.time.temporal.ChronoField;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jinvestor.datasource.converter.BarToDbRowConverter;
+import org.jinvestor.datasource.converter.CsvBarToDbRowConverter;
+import org.jinvestor.datasource.converter.YahooCsvDailyBarToDbRowConverter;
 import org.jinvestor.datasource.db.FastRawDbWriter;
 import org.jinvestor.datasource.file.CsvReader;
 import org.jinvestor.model.Bar;
-import org.jinvestor.model.BarTestUtil;
 import org.jinvestor.model.entity.EntityMetaDataFactory;
 import org.jinvestor.model.entity.IEntityMetaData;
 import org.jinvestor.time.DateTimeConverter;
@@ -37,7 +37,7 @@ public class CsvToSqliteTest {
 //	private static final String CSV_PATH = TEST_RES_PATH + "with-headers.csv";
 	private static final String CSV_PATH = "datasource/csv/yahoo.csv";
 //	private static final String DB_PATH = TEST_RES_PATH + "test.sqlite";
-	private static final String DB_PATH = "datasource/sqlite/test-big.sqlite";
+	private static final String DB_PATH = "datasource/sqlite/test-big.sqlite1";
 	private static final String DB_CONNECTION_STRING_PREFIX = "jdbc:sqlite:";
 	private static final String DB_CONNECTION_STRING = DB_CONNECTION_STRING_PREFIX + DB_PATH;
 
@@ -81,9 +81,8 @@ public class CsvToSqliteTest {
 		DateTimeFormatter toDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 		IConverter<String, String> dateTimeConverter = new DateTimeConverter(fromDateTimeFormatter,
 																			 toDateTimeFormatter);
-		IConverter<String[], Object[]> converter = new BarToDbRowConverter(
-														BarTestUtil.getStandardCsvColumnsMappings(),
-														barEntityMetaData,
+		IConverter<String[], Object[]> converter = new CsvBarToDbRowConverter(
+														YahooCsvDailyBarToDbRowConverter.getCsvToDbColumnsMappings(),
 														dateTimeConverter);
 		IWriter<Object[]> writer = new FastRawDbWriter(DB_CONNECTION_STRING,
 											  barEntityMetaData.getTableName(),

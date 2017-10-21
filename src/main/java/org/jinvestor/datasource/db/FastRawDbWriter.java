@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jinvestor.datasource.IWriter;
 import org.jinvestor.exception.AppRuntimeException;
+import org.jinvestor.model.entity.EntityMetaDataFactory;
 
 import com.alexfu.sqlitequerybuilder.api.SQLiteQueryBuilder;
 
@@ -42,6 +43,28 @@ public class FastRawDbWriter implements IWriter<Object[]> {
 	private List<Object[]> buffer;
 	private int batchSize;
 	private int insertCount;
+
+
+	public FastRawDbWriter(String dbConnectionString, Class<?> entityClass) {
+		this(dbConnectionString, new Properties(), entityClass, DEFAULT_BATCH_SIZE);
+	}
+
+
+	public FastRawDbWriter(String dbConnectionString, Properties dbConnectionProperties, Class<?> entityClass) {
+		this(dbConnectionString, dbConnectionProperties, entityClass, DEFAULT_BATCH_SIZE);
+	}
+
+
+	public FastRawDbWriter(String dbConnectionString,
+						   Properties dbConnectionProperties,
+						   Class<?> entityClass,
+						   int batchSize) {
+		this(dbConnectionString,
+			 new Properties(),
+			 EntityMetaDataFactory.get(entityClass).getTableName(),
+			 EntityMetaDataFactory.get(entityClass).getColumns(),
+			 batchSize);
+	}
 
 
 	public FastRawDbWriter(String dbConnectionString,

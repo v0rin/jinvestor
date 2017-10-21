@@ -20,10 +20,10 @@ import com.alexfu.sqlitequerybuilder.builder.CreateTableSegmentBuilder;
  */
 public class EntityMetaData<T> implements IEntityMetaData<T> {
 
-	private Class<T> clazz;
+	private Class<T> entityClass;
 
-	EntityMetaData(Class<T> clazz) {
-		this.clazz = clazz;
+	EntityMetaData(Class<T> entityClass) {
+		this.entityClass = entityClass;
 	}
 
 
@@ -37,7 +37,7 @@ public class EntityMetaData<T> implements IEntityMetaData<T> {
 	@Override
 	public String[] getColumns() {
 		validateAnnotations();
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = entityClass.getDeclaredFields();
         List<String> columns = new ArrayList<>();
         for (Field field : fields) {
         	if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
@@ -55,7 +55,7 @@ public class EntityMetaData<T> implements IEntityMetaData<T> {
 		        .create()
 		        .table(getTableName());
 
-        Field[] fields = clazz.getDeclaredFields();
+        Field[] fields = entityClass.getDeclaredFields();
         for (Field field : fields) {
         	if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
         		continue;
@@ -72,26 +72,26 @@ public class EntityMetaData<T> implements IEntityMetaData<T> {
 
 
 	private void validateAnnotations() {
-		if (!clazz.isAnnotationPresent(Entity.class)) {
-			throw new InvalidAnnotationException("Class[" + clazz.getName() + "] is not annotation as Entity");
+		if (!entityClass.isAnnotationPresent(Entity.class)) {
+			throw new InvalidAnnotationException("Class[" + entityClass.getName() + "] is not annotation as Entity");
 		}
-		if (!clazz.isAnnotationPresent(Table.class)) {
-			throw new InvalidAnnotationException("Class[" + clazz.getName() + "] is not annotation as Table");
+		if (!entityClass.isAnnotationPresent(Table.class)) {
+			throw new InvalidAnnotationException("Class[" + entityClass.getName() + "] is not annotation as Table");
 		}
-		if (StringUtils.isBlank(clazz.getAnnotation(Table.class).name())) {
+		if (StringUtils.isBlank(entityClass.getAnnotation(Table.class).name())) {
 			throw new InvalidAnnotationException("Table name not defined");
 		}
 	}
 
 
 	private String getTableAnnotationName() {
-		if (!clazz.isAnnotationPresent(Table.class)) {
-			throw new InvalidAnnotationException("Class[" + clazz.getName() + "] is not annotated as Table");
+		if (!entityClass.isAnnotationPresent(Table.class)) {
+			throw new InvalidAnnotationException("Class[" + entityClass.getName() + "] is not annotated as Table");
 		}
 
-		String name = clazz.getAnnotation(Table.class).name();
+		String name = entityClass.getAnnotation(Table.class).name();
 		if (StringUtils.isBlank(name)) {
-			throw new InvalidAnnotationException("Annotation name empty or null for field");
+			throw new InvalidAnnotationException("Table Annotation name empty or null for field");
 		}
 		return name;
 	}
@@ -126,6 +126,6 @@ public class EntityMetaData<T> implements IEntityMetaData<T> {
 
 	@Override
 	public Class<T> getClazz() {
-		return clazz;
+		return entityClass;
 	}
 }
