@@ -1,4 +1,4 @@
-package org.jinvestor.apps;
+package org.jinvestor.app;
 
 import java.io.IOException;
 import java.sql.Connection;
