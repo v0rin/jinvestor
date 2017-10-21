@@ -7,10 +7,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 
-import org.jinvestor.datasource.IConverter;
 import org.junit.Test;
 
-public class DateTimeConverterTest {
+public class DateTimeStringConverterTest {
 
 	private static final String INPUT_TIME = "1993-01-01";
 	private static final String EXPECTED_OUTPUT_TIME = "1993-01-01 23:59:59.999999";
@@ -30,7 +29,8 @@ public class DateTimeConverterTest {
 											        .toFormatter();
 		DateTimeFormatter toDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
-		IConverter<String, String> converter = new DateTimeConverter(fromDateTimeFormatter, toDateTimeFormatter);
+		IDateTimeConverter<String, String> converter =
+				new DateTimeStringConverter(fromDateTimeFormatter, toDateTimeFormatter);
 
 		// when
 		String actual = converter.apply(INPUT_TIME);

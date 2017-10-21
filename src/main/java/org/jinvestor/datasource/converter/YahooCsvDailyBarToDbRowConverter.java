@@ -12,7 +12,7 @@ import org.jinvestor.time.DateTimeConverterFactory;
 public class YahooCsvDailyBarToDbRowConverter extends CsvBarToDbRowConverter {
 
 	public YahooCsvDailyBarToDbRowConverter() {
-		super(getCsvToDbColumnsMappings(), DateTimeConverterFactory.getDateToDateTimeConverter());
+		super(getCsvToDbColumnsMappings(), DateTimeConverterFactory.getDateToDateTimeEodConverter());
 	}
 
 	public static Map<String, String> getCsvToDbColumnsMappings() {

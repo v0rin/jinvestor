@@ -15,9 +15,9 @@ public class DateTimeConverterFactory {
 	}
 
 	/**
-	 * @return {@link DateTimeConverter} that converts {@code yyyy-MM-dd} to {@code yyyy-MM-dd 23:59:59.999}
+	 * @return {@link DateTimeStringConverter} that converts {@code yyyy-MM-dd} to {@code yyyy-MM-dd 23:59:59.999}
 	 */
-	public static DateTimeConverter getDateToDateTimeConverter() {
+	public static IDateTimeConverter<String, String> getDateToDateTimeEodConverter() {
 		DateTimeFormatter fromDateTimeFormatter = new DateTimeFormatterBuilder()
 		        .appendPattern("yyyy-MM-dd")
 		        .optionalStart()
@@ -30,6 +30,6 @@ public class DateTimeConverterFactory {
 		        .toFormatter();
 		DateTimeFormatter toDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
-		return new DateTimeConverter(fromDateTimeFormatter, toDateTimeFormatter);
+		return new DateTimeStringConverter(fromDateTimeFormatter, toDateTimeFormatter);
 	}
 }

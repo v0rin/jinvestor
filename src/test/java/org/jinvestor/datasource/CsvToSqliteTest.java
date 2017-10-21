@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,7 +15,8 @@ import org.jinvestor.datasource.file.CsvReader;
 import org.jinvestor.model.Bar;
 import org.jinvestor.model.entity.EntityMetaDataFactory;
 import org.jinvestor.model.entity.IEntityMetaData;
-import org.jinvestor.time.DateTimeConverter;
+import org.jinvestor.time.DateTimeConverterFactory;
+import org.jinvestor.time.IDateTimeConverter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,19 +66,7 @@ public class CsvToSqliteTest {
 //		IConverter<String[], Object[]> converter = new FastRawStringArrToObjectArrConverter(
 //															BarTestUtil.getStandardCsvColumnsMappings(),
 //															barEntityMetaData);
-		DateTimeFormatter fromDateTimeFormatter = new DateTimeFormatterBuilder()
-		        .appendPattern("yyyy-MM-dd")
-		        .optionalStart()
-		        .appendPattern(" HH:mm")
-		        .optionalEnd()
-		        .parseDefaulting(ChronoField.HOUR_OF_DAY, 23)
-		        .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 59)
-		        .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 59)
-		        .parseDefaulting(ChronoField.MILLI_OF_SECOND, 999)
-		        .toFormatter();
-		DateTimeFormatter toDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-		IConverter<String, String> dateTimeConverter = new DateTimeConverter(fromDateTimeFormatter,
-																			 toDateTimeFormatter);
+		IDateTimeConverter<String, String> dateTimeConverter = DateTimeConverterFactory.getDateToDateTimeEodConverter();
 		IConverter<String[], Object[]> converter = new CsvBarToDbRowConverter(
 														YahooCsvDailyBarToDbRowConverter.getCsvToDbColumnsMappings(),
 														dateTimeConverter);

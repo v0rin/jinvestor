@@ -2,8 +2,8 @@ package org.jinvestor.datasource.converter;
 
 import java.util.Map;
 
-import org.jinvestor.datasource.IConverter;
 import org.jinvestor.model.Bar;
+import org.jinvestor.time.IDateTimeConverter;
 
 /**
  *
@@ -11,10 +11,10 @@ import org.jinvestor.model.Bar;
  */
 public class CsvBarToDbRowConverter extends FastRawCsvToDbRowConverter {
 
-	private IConverter<String, String> dateTimeConverter;
+	private IDateTimeConverter<String, String> dateTimeConverter;
 
 	public CsvBarToDbRowConverter(Map<String, String> inputToOutputColumnMappings,
-			  				   IConverter<String, String> dateTimeConverter) {
+			  				   IDateTimeConverter<String, String> dateTimeConverter) {
 		super(inputToOutputColumnMappings, Bar.class);
 		this.dateTimeConverter = dateTimeConverter;
 	}

@@ -3,18 +3,16 @@ package org.jinvestor.time;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.jinvestor.datasource.IConverter;
-
 /**
  *
  * @author Adam
  */
-public class DateTimeConverter implements IConverter<String, String> {
+public class DateTimeStringConverter implements IDateTimeConverter<String, String> {
 
 	private DateTimeFormatter fromDateTimeFormatter;
 	private DateTimeFormatter toDateTimeFormatter;
 
-	public DateTimeConverter(DateTimeFormatter fromDateTimeFormatter, DateTimeFormatter toDateTimeFormatter) {
+	public DateTimeStringConverter(DateTimeFormatter fromDateTimeFormatter, DateTimeFormatter toDateTimeFormatter) {
 		this.fromDateTimeFormatter = fromDateTimeFormatter;
 		this.toDateTimeFormatter = toDateTimeFormatter;
 	}
