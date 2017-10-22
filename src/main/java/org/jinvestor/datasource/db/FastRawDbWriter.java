@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.function.Predicate;
@@ -92,7 +94,7 @@ public class FastRawDbWriter implements IWriter<Object[]> {
         this.dbConnectionString = dbConnectionString;
         this.dbConnectionProperties = dbConnectionProperties;
         this.dbTableName = dbTableName;
-        this.dbColumns = dbColumns;
+        this.dbColumns = Arrays.copyOf(dbColumns, dbColumns.length);
         this.batchSize = batchSize;
     }
 
@@ -133,11 +135,22 @@ public class FastRawDbWriter implements IWriter<Object[]> {
                     .values((Object[])row)
                     .build();
 
+            Statement statement = null;
             try {
-                insertCount += connection.createStatement().executeUpdate(insertSql);
+                statement = connection.createStatement();
+                insertCount += statement.executeUpdate(insertSql);
             }
             catch (SQLException e) {
                 throw new AppRuntimeException("Could not add query to the batch; query=" + insertSql, e);
+            }
+            finally {
+                try {
+                    statement.close();
+                    connection.close();
+                }
+                catch (SQLException e1) {
+                    throw new AppRuntimeException("Could not release resources (statement, connection)", e1);
+                }
             }
         });
 

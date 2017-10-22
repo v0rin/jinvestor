@@ -1,7 +1,9 @@
 package org.jinvestor.datasource.file;
 
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import org.jinvestor.datasource.IReader;
@@ -26,7 +28,7 @@ public class CsvReader implements IReader<String[]> {
 
     @Override
     public Stream<String[]> stream() throws IOException {
-        csvFileReader = new FileReader(csvPath);
+        csvFileReader = new InputStreamReader(new FileInputStream(csvPath), StandardCharsets.UTF_8);
         outgoingStream = CsvParser.separator(separator).stream(csvFileReader);
         return outgoingStream;
     }

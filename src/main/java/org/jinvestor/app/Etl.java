@@ -38,7 +38,7 @@ public class Etl {
     private static void executeYahooCsvDailyBarsToSqliteEtl() throws IOException, SQLException {
         //#### CONFIGURATION #####
         String csvPath = DATASOURCE_ROOT_PATH + "csv/yahoo.csv";
-        String dbPath = "datasource/sqlite/bar.daily.sqlite";
+        String dbPath = "datasource/sqlite/bar.daily.sqlite1";
         //########################
         createDbTableForEntity(SQLITE_CONNECTION_PREFIX + dbPath, Bar.class);
 

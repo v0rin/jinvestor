@@ -8,6 +8,8 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
 *
 * @author Adam
@@ -41,6 +43,7 @@ public class Bar {
     public Bar() {
     }
 
+    @SuppressFBWarnings(value="EI_EXPOSE_REP2")
     public Bar(String symbol,
                Timestamp dateTime,
                Double open,
@@ -67,9 +70,10 @@ public class Bar {
     }
 
     public Timestamp getTimestamp() {
-        return timestamp;
+        return new Timestamp(timestamp.getTime());
     }
 
+    @SuppressFBWarnings(value="EI_EXPOSE_REP2")
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
