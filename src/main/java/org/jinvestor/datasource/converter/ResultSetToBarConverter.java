@@ -42,7 +42,8 @@ public class ResultSetToBarConverter implements IConverter<ResultSet, Bar> {
                               resultSet.getDouble(i++),
                               resultSet.getDouble(i++),
                               resultSet.getDouble(i++),
-                              resultSet.getLong(i++));
+                              resultSet.getLong(i++),
+                              resultSet.getString(i));
         }
         catch (SQLException e) {
             throw new AppRuntimeException(e);

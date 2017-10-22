@@ -3,6 +3,7 @@ package org.jinvestor.datasource.converter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.jinvestor.model.Currency;
 import org.jinvestor.time.DateTimeConverterFactory;
 
 /**
@@ -11,8 +12,8 @@ import org.jinvestor.time.DateTimeConverterFactory;
  */
 public class YahooCsvDailyBarToDbRowConverter extends CsvBarToDbRowConverter {
 
-    public YahooCsvDailyBarToDbRowConverter() {
-        super(getCsvToDbColumnsMappings(), DateTimeConverterFactory.getDateToDateTimeEodConverter());
+    public YahooCsvDailyBarToDbRowConverter(Currency currency) {
+        super(getCsvToDbColumnsMappings(), DateTimeConverterFactory.getDateToDateTimeEodConverter(), currency);
     }
 
     public static Map<String, String> getCsvToDbColumnsMappings() {

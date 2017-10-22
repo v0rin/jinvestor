@@ -13,6 +13,8 @@ import org.jinvestor.datasource.converter.YahooCsvDailyBarToDbRowConverter;
 import org.jinvestor.datasource.db.FastRawDbWriter;
 import org.jinvestor.datasource.file.CsvReader;
 import org.jinvestor.model.Bar;
+import org.jinvestor.model.Currency;
+import org.jinvestor.model.Currency.Code;
 import org.jinvestor.model.entity.EntityMetaDataFactory;
 import org.jinvestor.model.entity.IEntityMetaData;
 import org.jinvestor.time.DateTimeConverterFactory;
@@ -69,7 +71,8 @@ public class CsvToSqliteTest {
         IDateTimeConverter<String, String> dateTimeConverter = DateTimeConverterFactory.getDateToDateTimeEodConverter();
         IConverter<String[], Object[]> converter = new CsvBarToDbRowConverter(
                                                         YahooCsvDailyBarToDbRowConverter.getCsvToDbColumnsMappings(),
-                                                        dateTimeConverter);
+                                                        dateTimeConverter,
+                                                        Currency.of(Code.USD));
         IWriter<Object[]> writer = new FastRawDbWriter(DB_CONNECTION_STRING,
                                               barEntityMetaData.getTableName(),
                                               barEntityMetaData.getColumns());

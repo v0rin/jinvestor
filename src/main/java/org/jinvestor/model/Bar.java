@@ -39,18 +39,35 @@ public class Bar {
     @Column(name="volume", columnDefinition="INTEGER")
     public Long volume;
 
+    @Column(name="currency", columnDefinition="TEXT")
+    public Currency currency;
+
 
     public Bar() {
     }
 
-    @SuppressFBWarnings(value="EI_EXPOSE_REP2")
+    @SuppressWarnings("checkstyle:ParameterNumber")
     public Bar(String symbol,
                Timestamp dateTime,
                Double open,
                Double high,
                Double low,
                Double close,
-               Long volume) {
+               Long volume,
+               Currency.Code currency) {
+        this(symbol, dateTime, open, high, low, close, volume, currency.name());
+    }
+
+    @SuppressFBWarnings(value="EI_EXPOSE_REP2")
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    public Bar(String symbol,
+               Timestamp dateTime,
+               Double open,
+               Double high,
+               Double low,
+               Double close,
+               Long volume,
+               String currency) {
         this.symbol = symbol;
         this.timestamp = dateTime;
         this.open = open;
@@ -58,6 +75,7 @@ public class Bar {
         this.low = low;
         this.close = close;
         this.volume = volume;
+        this.currency = new Currency(currency);
     }
 
 
@@ -116,6 +134,14 @@ public class Bar {
 
     public void setVolume(Long volume) {
         this.volume = volume;
+    }
+
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
     }
 
     @Override

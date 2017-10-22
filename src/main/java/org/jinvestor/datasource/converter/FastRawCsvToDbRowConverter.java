@@ -36,7 +36,7 @@ public class FastRawCsvToDbRowConverter implements IConverter<String[], Object[]
     @Override
     public Object[] apply(String[] strings) {
         if (isFirstTimeCalled) {
-            validate(strings, inputToOutputColumnMappings, entityMetaData);
+            validateInputColumns(strings, inputToOutputColumnMappings, entityMetaData);
             isFirstTimeCalled = false;
             return new Object[0];
         }
@@ -44,12 +44,12 @@ public class FastRawCsvToDbRowConverter implements IConverter<String[], Object[]
     }
 
 
-    private void validate(String[] strings,
-                          Map<String, String> inputToOutputColumnMappings,
-                          IEntityMetaData<?> entityMetaData) {
+    private void validateInputColumns(String[] inputColumns,
+                                      Map<String, String> inputToOutputColumnMappings,
+                                      IEntityMetaData<?> entityMetaData) {
         String[] entityColumns = entityMetaData.getColumns();
-        validateMappings(strings, inputToOutputColumnMappings, entityColumns);
-        validateColumnOrder(strings, inputToOutputColumnMappings, entityColumns);
+        validateMappings(inputColumns, inputToOutputColumnMappings, entityColumns);
+        validateColumnOrder(inputColumns, inputToOutputColumnMappings, entityColumns);
     }
 
 
@@ -59,40 +59,40 @@ public class FastRawCsvToDbRowConverter implements IConverter<String[], Object[]
      * @param inputToOutputColumnMappings
      * @throws IllegalArgumentException if validation fails
      */
-    private void validateMappings(String[] inputColumns,
+    private void validateMappings(String[] csvColumns,
                                   Map<String, String> inputToOutputColumnMappings,
                                   String[] entityColumns) {
-        List<String> inputColumnList = Arrays.asList(inputColumns);
+        List<String> inputColumnList = Arrays.asList(csvColumns);
         Collection<String> mappedInputColumnList = inputToOutputColumnMappings.keySet();
         Collection<String> mappedOutputColumnList = inputToOutputColumnMappings.values();
         List<String> entityColumnList = Arrays.asList(entityColumns);
         checkArgument(collectionsEqualIgnoresOrder(inputColumnList, mappedInputColumnList) &&
                       collectionsEqualIgnoresOrder(mappedOutputColumnList, entityColumnList),
-                      "Incorrect mappings: " + getAsString(inputColumns, inputToOutputColumnMappings, entityColumns));
+                      "Incorrect mappings: " + getAsString(csvColumns, inputToOutputColumnMappings, entityColumns));
     }
 
 
-    private void validateColumnOrder(String[] inputColumns,
+    private void validateColumnOrder(String[] csvColumns,
                                      Map<String, String> inputToOutputColumnMappings,
                                      String[] entityColumns) {
-        List<String> mappedInputColumns = Arrays.asList(inputColumns)
+        List<String> mappedInputColumns = Arrays.asList(csvColumns)
                                             .stream()
                                             .map(inputToOutputColumnMappings::get)
                                             .collect(Collectors.toList());
         if (!mappedInputColumns.equals(Arrays.asList(entityColumns))) {
-            throw new UnsupportedOperationException("Input columns in different order than entity columms. " +
-                                              getAsString(inputColumns, inputToOutputColumnMappings, entityColumns) +
+            throw new UnsupportedOperationException("csv columns in different order than entity columms. " +
+                                              getAsString(csvColumns, inputToOutputColumnMappings, entityColumns) +
                                               ". This is not supported in this fast implementation");
         }
     }
 
 
-    private String getAsString(String[] inputColumns,
+    private String getAsString(String[] csvColumns,
                                Map<String, String> inputToOutputColumnMappings,
                                String[] entityColumns) {
         return new StringBuilder()
-                .append("input columns=").append(Arrays.asList(inputColumns))
-                .append("; output column mappings=").append(inputToOutputColumnMappings)
+                .append("csv columns=").append(Arrays.asList(csvColumns))
+                .append("; column mappings=").append(inputToOutputColumnMappings)
                 .append("; entity column=").append(Arrays.asList(entityColumns))
                 .toString();
     }

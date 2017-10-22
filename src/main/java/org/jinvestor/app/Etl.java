@@ -1,16 +1,22 @@
 package org.jinvestor.app;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jinvestor.datasource.EtlJobFactory;
+import org.jinvestor.exception.AppRuntimeException;
+import org.jinvestor.io.YesNoCommandPrompt;
 import org.jinvestor.model.Bar;
+import org.jinvestor.model.Currency;
+import org.jinvestor.model.Currency.Code;
 import org.jinvestor.model.entity.EntityMetaDataFactory;
 
 import com.google.common.base.Stopwatch;
@@ -38,12 +44,16 @@ public class Etl {
     private static void executeYahooCsvDailyBarsToSqliteEtl() throws IOException, SQLException {
         //#### CONFIGURATION #####
         String csvPath = DATASOURCE_ROOT_PATH + "csv/yahoo.csv";
-        String dbPath = "datasource/sqlite/bar.daily.sqlite1";
+        String dbPath = "datasource/sqlite/bar.daily.sqlite";
+        Currency currency = Currency.of(Code.USD);
         //########################
-        createDbTableForEntity(SQLITE_CONNECTION_PREFIX + dbPath, Bar.class);
+
+        if (!new File(dbPath).exists() || (new File(dbPath).exists() && deleteOldDbWizard(dbPath))) {
+            createDbTableForEntity(SQLITE_CONNECTION_PREFIX + dbPath, Bar.class);
+        }
 
         Stopwatch sw = Stopwatch.createStarted();
-        EtlJobFactory.getYahooCsvDailyBarsToDbEtl(csvPath, SQLITE_CONNECTION_PREFIX + dbPath).execute();
+        EtlJobFactory.getYahooCsvDailyBarsToDbEtl(csvPath, SQLITE_CONNECTION_PREFIX + dbPath, currency).execute();
         LOG.info("ETL job took " + sw.elapsed(TimeUnit.MILLISECONDS) + "ms");
     }
 
@@ -57,4 +67,24 @@ public class Etl {
         }
     }
 
+
+    private static boolean deleteOldDbWizard(String dbPath) {
+        String promptString = "Db[" + dbPath + "] exists. Do you want to delete it and create a new one?";
+
+        Supplier<Boolean> yesAction = () -> {
+            if (new File(dbPath).delete()) {
+                LOG.info("Db [{}] deleted", dbPath);
+                return true;
+            }
+            throw new AppRuntimeException("Could not delete db [" + dbPath + "]");
+        };
+
+        Supplier<Boolean> noAction = () -> {
+            LOG.info("You chose not to delete the old database. Appending data to existing one...");
+            return false;
+        };
+
+        YesNoCommandPrompt<Boolean> prompt = new YesNoCommandPrompt<>(promptString, yesAction, noAction);
+        return prompt.run();
+    }
 }

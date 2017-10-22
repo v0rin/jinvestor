@@ -146,7 +146,6 @@ public class FastRawDbWriter implements IWriter<Object[]> {
             finally {
                 try {
                     statement.close();
-                    connection.close();
                 }
                 catch (SQLException e1) {
                     throw new AppRuntimeException("Could not release resources (statement, connection)", e1);
