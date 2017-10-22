@@ -6,21 +6,21 @@ package org.jinvestor.exception;
  */
 public class AppRuntimeException extends RuntimeException {
 
-	private static final long serialVersionUID = 4699125731633946997L;
+    private static final long serialVersionUID = 4699125731633946997L;
 
-	public AppRuntimeException() {
-		super();
-	}
+    public AppRuntimeException() {
+        super();
+    }
 
-	public AppRuntimeException(String message) {
-		super(message);
-	}
+    public AppRuntimeException(String message) {
+        super(message);
+    }
 
-	public AppRuntimeException(Throwable t) {
-		super(t);
-	}
+    public AppRuntimeException(Throwable t) {
+        super(t);
+    }
 
-	public AppRuntimeException(String message, Throwable t) {
-		super(message, t);
-	}
+    public AppRuntimeException(String message, Throwable t) {
+        super(message, t);
+    }
 }

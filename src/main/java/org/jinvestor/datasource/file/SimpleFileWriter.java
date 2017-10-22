@@ -18,31 +18,32 @@ import org.jinvestor.exception.AppRuntimeException;
  */
 public class SimpleFileWriter implements IWriter<String> {
 
-	private static final Charset CHARSET = StandardCharsets.UTF_8;
+    private static final Charset CHARSET = StandardCharsets.UTF_8;
 
-	private String filePath;
+    private String filePath;
 
-	public SimpleFileWriter(String filePath, boolean append) throws IOException {
-		this.filePath = filePath;
-		if (!new File(filePath).createNewFile() && !append) {
-			throw new IOException("File [" + filePath + "] already exists");
-		}
-	}
+    public SimpleFileWriter(String filePath, boolean append) throws IOException {
+        this.filePath = filePath;
+        if (!new File(filePath).createNewFile() && !append) {
+            throw new IOException("File [" + filePath + "] already exists");
+        }
+    }
 
-	@Override
-	public void close() throws Exception {
-		// method intentionally empty
-	}
+    @Override
+    public void close() throws Exception {
+        // method intentionally empty
+    }
 
-	@Override
-	public void write(Stream<String> incomingStream) throws IOException {
-		incomingStream.forEach(line -> {
-			try {
-				line += System.getProperty("line.separator");
-				Files.write(Paths.get(filePath), line.getBytes(CHARSET), StandardOpenOption.APPEND);
-			} catch (IOException e) {
-				throw new AppRuntimeException(e);
-			}
-		});
-	}
+    @Override
+    public void write(Stream<String> incomingStream) throws IOException {
+        incomingStream.forEach(line -> {
+            try {
+                line += System.getProperty("line.separator");
+                Files.write(Paths.get(filePath), line.getBytes(CHARSET), StandardOpenOption.APPEND);
+            }
+            catch (IOException e) {
+                throw new AppRuntimeException(e);
+            }
+        });
+    }
 }

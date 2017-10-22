@@ -11,17 +11,17 @@ import org.jinvestor.model.Bar;
  */
 public class EtlJobFactory {
 
-	private static final char STANDARD_CSV_SEPARATOR = ',';
+    private static final char STANDARD_CSV_SEPARATOR = ',';
 
-	private EtlJobFactory() {
-		throw new InstantiationError("This class should not instantiated");
-	}
+    private EtlJobFactory() {
+        throw new InstantiationError("This class should not instantiated");
+    }
 
-	public static IEtlJob getYahooCsvDailyBarsToDbEtl(String csvPath, String dbConnectionString) {
-		IReader<String[]> reader = new CsvReader(csvPath, STANDARD_CSV_SEPARATOR);
-		IConverter<String[], Object[]> converter = new YahooCsvDailyBarToDbRowConverter();
-		IWriter<Object[]> writer = new FastRawDbWriter(dbConnectionString, Bar.class);
+    public static IEtlJob getYahooCsvDailyBarsToDbEtl(String csvPath, String dbConnectionString) {
+        IReader<String[]> reader = new CsvReader(csvPath, STANDARD_CSV_SEPARATOR);
+        IConverter<String[], Object[]> converter = new YahooCsvDailyBarToDbRowConverter();
+        IWriter<Object[]> writer = new FastRawDbWriter(dbConnectionString, Bar.class);
 
-		return new EtlJob<String[], Object[]>(reader, converter, writer);
-	}
+        return new EtlJob<String[], Object[]>(reader, converter, writer);
+    }
 }

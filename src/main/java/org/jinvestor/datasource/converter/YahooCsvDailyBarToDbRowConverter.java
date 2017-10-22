@@ -11,20 +11,20 @@ import org.jinvestor.time.DateTimeConverterFactory;
  */
 public class YahooCsvDailyBarToDbRowConverter extends CsvBarToDbRowConverter {
 
-	public YahooCsvDailyBarToDbRowConverter() {
-		super(getCsvToDbColumnsMappings(), DateTimeConverterFactory.getDateToDateTimeEodConverter());
-	}
+    public YahooCsvDailyBarToDbRowConverter() {
+        super(getCsvToDbColumnsMappings(), DateTimeConverterFactory.getDateToDateTimeEodConverter());
+    }
 
-	public static Map<String, String> getCsvToDbColumnsMappings() {
-		Map<String, String> inputToOutputColumnMappings = new HashMap<>();
-		inputToOutputColumnMappings.put("Symbol", "symbol");
-		inputToOutputColumnMappings.put("Date", "timestamp");
-		inputToOutputColumnMappings.put("Open", "open");
-		inputToOutputColumnMappings.put("High", "high");
-		inputToOutputColumnMappings.put("Low", "low");
-		inputToOutputColumnMappings.put("Close", "close");
-		inputToOutputColumnMappings.put("Volume", "volume");
+    public static Map<String, String> getCsvToDbColumnsMappings() {
+        Map<String, String> inputToOutputColumnMappings = new HashMap<>();
+        inputToOutputColumnMappings.put("Symbol", "symbol");
+        inputToOutputColumnMappings.put("Date", "timestamp");
+        inputToOutputColumnMappings.put("Open", "open");
+        inputToOutputColumnMappings.put("High", "high");
+        inputToOutputColumnMappings.put("Low", "low");
+        inputToOutputColumnMappings.put("Close", "close");
+        inputToOutputColumnMappings.put("Volume", "volume");
 
-		return inputToOutputColumnMappings;
-	}
+        return inputToOutputColumnMappings;
+    }
 }

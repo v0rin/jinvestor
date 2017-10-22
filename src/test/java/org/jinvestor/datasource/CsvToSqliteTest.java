@@ -29,61 +29,61 @@ import com.google.common.base.Stopwatch;
  */
 public class CsvToSqliteTest {
 
-	private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger();
 
-	private static final String TEST_RES_PATH = "src/test/resources/org/jinvestor/datasource/csv-to-sqlite-test/";
-//	private static final String CSV_PATH = TEST_RES_PATH + "with-headers.csv";
-	private static final String CSV_PATH = "datasource/csv/yahoo.csv";
-//	private static final String DB_PATH = TEST_RES_PATH + "test.sqlite";
-	private static final String DB_PATH = "datasource/sqlite/test-big.sqlite1";
-	private static final String DB_CONNECTION_STRING_PREFIX = "jdbc:sqlite:";
-	private static final String DB_CONNECTION_STRING = DB_CONNECTION_STRING_PREFIX + DB_PATH;
+    private static final String TEST_RES_PATH = "src/test/resources/org/jinvestor/datasource/csv-to-sqlite-test/";
+//    private static final String CSV_PATH = TEST_RES_PATH + "with-headers.csv";
+    private static final String CSV_PATH = "datasource/csv/yahoo.csv";
+//    private static final String DB_PATH = TEST_RES_PATH + "test.sqlite";
+    private static final String DB_PATH = "datasource/sqlite/test-big.sqlite1";
+    private static final String DB_CONNECTION_STRING_PREFIX = "jdbc:sqlite:";
+    private static final String DB_CONNECTION_STRING = DB_CONNECTION_STRING_PREFIX + DB_PATH;
 
-	private final static char SEPARATOR = ',';
+    private static final char SEPARATOR = ',';
 
-	private IEntityMetaData<Bar> barEntityMetaData = EntityMetaDataFactory.get(Bar.class);
-
-
-	@Before
-	public void setUp() throws SQLException {
-		new File(DB_PATH).delete();
-		try (Connection connection = DriverManager.getConnection(DB_CONNECTION_STRING)) {
-			connection.prepareStatement(barEntityMetaData.getCreateTableSql()).executeUpdate();
-		}
-	}
+    private IEntityMetaData<Bar> barEntityMetaData = EntityMetaDataFactory.get(Bar.class);
 
 
-	@After
-	public void tearDown() {
-//		new File(DB_PATH).delete();
-	}
+    @Before
+    public void setUp() throws SQLException {
+        new File(DB_PATH).delete();
+        try (Connection connection = DriverManager.getConnection(DB_CONNECTION_STRING)) {
+            connection.prepareStatement(barEntityMetaData.getCreateTableSql()).executeUpdate();
+        }
+    }
 
 
-	@Test
-	public void simpleCsvToSqliteRawTest() throws SQLException, IOException {
-		// given
-		IReader<String[]> reader = new CsvReader(CSV_PATH, SEPARATOR);
-//		IConverter<String[], Object[]> converter = new FastRawStringArrToObjectArrConverter(
-//															BarTestUtil.getStandardCsvColumnsMappings(),
-//															barEntityMetaData);
-		IDateTimeConverter<String, String> dateTimeConverter = DateTimeConverterFactory.getDateToDateTimeEodConverter();
-		IConverter<String[], Object[]> converter = new CsvBarToDbRowConverter(
-														YahooCsvDailyBarToDbRowConverter.getCsvToDbColumnsMappings(),
-														dateTimeConverter);
-		IWriter<Object[]> writer = new FastRawDbWriter(DB_CONNECTION_STRING,
-											  barEntityMetaData.getTableName(),
-											  barEntityMetaData.getColumns());
+    @After
+    public void tearDown() {
+//        new File(DB_PATH).delete();
+    }
 
-		// when
-		final int iterCount = 1;
-		Stopwatch sw = Stopwatch.createStarted();
-		for (int i = 0; i < iterCount; i++) {
-			IEtlJob etlJob = new EtlJob<String[], Object[]>(reader, converter, writer);
-			etlJob.execute();
-		}
-		LOG.info("elapsed=" + sw.elapsed());
 
-		// then
+    @Test
+    public void simpleCsvToSqliteRawTest() throws SQLException, IOException {
+        // given
+        IReader<String[]> reader = new CsvReader(CSV_PATH, SEPARATOR);
+//        IConverter<String[], Object[]> converter = new FastRawStringArrToObjectArrConverter(
+//                                                            BarTestUtil.getStandardCsvColumnsMappings(),
+//                                                            barEntityMetaData);
+        IDateTimeConverter<String, String> dateTimeConverter = DateTimeConverterFactory.getDateToDateTimeEodConverter();
+        IConverter<String[], Object[]> converter = new CsvBarToDbRowConverter(
+                                                        YahooCsvDailyBarToDbRowConverter.getCsvToDbColumnsMappings(),
+                                                        dateTimeConverter);
+        IWriter<Object[]> writer = new FastRawDbWriter(DB_CONNECTION_STRING,
+                                              barEntityMetaData.getTableName(),
+                                              barEntityMetaData.getColumns());
 
-	}
+        // when
+        final int iterCount = 1;
+        Stopwatch sw = Stopwatch.createStarted();
+        for (int i = 0; i < iterCount; i++) {
+            IEtlJob etlJob = new EtlJob<String[], Object[]>(reader, converter, writer);
+            etlJob.execute();
+        }
+        LOG.info("elapsed=" + sw.elapsed());
+
+        // then
+
+    }
 }

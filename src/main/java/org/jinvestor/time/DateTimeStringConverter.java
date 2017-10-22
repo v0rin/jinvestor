@@ -1,6 +1,6 @@
 package org.jinvestor.time;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -9,17 +9,17 @@ import java.time.format.DateTimeFormatter;
  */
 public class DateTimeStringConverter implements IDateTimeConverter<String, String> {
 
-	private DateTimeFormatter fromDateTimeFormatter;
-	private DateTimeFormatter toDateTimeFormatter;
+    private DateTimeFormatter fromDateTimeFormatter;
+    private DateTimeFormatter toDateTimeFormatter;
 
-	public DateTimeStringConverter(DateTimeFormatter fromDateTimeFormatter, DateTimeFormatter toDateTimeFormatter) {
-		this.fromDateTimeFormatter = fromDateTimeFormatter;
-		this.toDateTimeFormatter = toDateTimeFormatter;
-	}
+    public DateTimeStringConverter(DateTimeFormatter fromDateTimeFormatter, DateTimeFormatter toDateTimeFormatter) {
+        this.fromDateTimeFormatter = fromDateTimeFormatter;
+        this.toDateTimeFormatter = toDateTimeFormatter;
+    }
 
-	@Override
-	public String apply(String t) {
-		LocalDateTime ld = LocalDateTime.parse(t, fromDateTimeFormatter);
-		return ld.format(toDateTimeFormatter);
-	}
+    @Override
+    public String apply(String t) {
+        ZonedDateTime zdt = ZonedDateTime.parse(t, fromDateTimeFormatter);
+        return zdt.format(toDateTimeFormatter);
+    }
 }

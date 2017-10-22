@@ -8,6 +8,6 @@ import java.io.IOException;
  */
 public interface IEtlJob {
 
-	void execute() throws IOException;
+    void execute() throws IOException;
 
 }

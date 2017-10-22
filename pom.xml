@@ -19,11 +19,48 @@
 	<properties>
 	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	    <skipTests>false</skipTests>
+	    <skip.integration-tests>true</skip.integration-tests>
+	    <skip.unit.tests>${skipTests}</skip.unit.tests>
+	    
+	    <skip.static.analysis>false</skip.static.analysis>
+	    <findbugs.skip>${skip.static.analysis}</findbugs.skip>
+	    <findbugs.failOnError>${!skip.static.analysis}</findbugs.failOnError>
+	    <checkstyle.skip>${skip.static.analysis}</checkstyle.skip>
+	    <checkstyle.failOnViolation>${!skip.static.analysis}</checkstyle.failOnViolation>
+	    <lint.failOnViolation>${!skip.static.analysis}</lint.failOnViolation>
 	    
 		<java.version>1.8</java.version>
 	</properties>
 
     <profiles>
+        <profile>
+            <id>release-deployment</id>
+            <distributionManagement>
+                <repository>
+                    <id>release-repo-id</id>
+                    <name>release-repo-name</name>
+                    <url>release-repo-url</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>snapshot-deployment</id>
+            <distributionManagement>
+                <repository>
+                    <id>snapshot-repo-id</id>
+                    <name>snapshot-repo-name</name>
+                    <url>snapshot-repo-url</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>integration-test</id>
+            <properties>
+                <skip.integration.tests>false</skip.integration.tests>
+                <skip.unit.tests>true</skip.unit.tests>
+            </properties>
+        </profile>
 		<profile>
 			<id>sonar-coverage</id>
 			<activation>
@@ -79,12 +116,43 @@
      </profiles>
      
     <repositories>
-	    <repository>
+		<repository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <url>http://repo1.maven.org/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+			    <updatePolicy>never</updatePolicy>
+			</releases>
+		</repository>
+		<repository>
 	      <id>jitpack</id>
 	      <name>jitpack</name>
 	      <url>https://jitpack.io</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
 	    </repository>
 	</repositories>
+    
+    <pluginRepositories>
+        <pluginRepository>
+            <id>central</id>
+            <name>Maven Repository Switchboard</name>
+            <url>http://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
     
 	<dependencies>
 	
@@ -172,8 +240,81 @@
 
 	<build>
 	   
-	    <plugins>
-	    
+        <plugins>
+	
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>1.4.1</version>
+                <configuration>
+                    <rules>
+                        <requireJavaVersion>
+                            <version>${java.version}</version>
+                        </requireJavaVersion>
+                    </rules>
+                </configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>add-integration-test-source</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>add-test-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>src/integration-test/java</source>
+							</sources>
+						</configuration>
+					</execution>
+                    <execution>
+                        <id>add-integration-test-resource</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>add-test-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <filtering>true</filtering>
+                                    <directory>src/integration-test/resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-performance-test-source</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/performance-test/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-performance-test-resource</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>add-test-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <filtering>true</filtering>
+                                    <directory>src/performance-test/resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+				</executions>
+			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
 	            <artifactId>maven-compiler-plugin</artifactId>
@@ -181,13 +322,124 @@
 	            <configuration>
         		<source>${java.version}</source>
 		        <target>${java.version}</target>
+		        <encoding>UTF-8</encoding>
 	            </configuration>
+            </plugin>
+	        <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.20.1</version>
+				<configuration>
+                    <systemPropertyVariables>
+                        <log4j.configurationFile>-Dlog4j.configurationFile=src/test/resources/log4j2-test.xml</log4j.configurationFile>
+                    </systemPropertyVariables>
+				    <includes>
+				        <include>**/*Test*.java</include>
+				    </includes>
+				</configuration>
+	        </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.20.1</version>
+				<executions>
+					<execution>
+					    <id>integration-test</id>
+					    <phase>verify</phase>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+				    <skipTests>${skipTests}</skipTests>
+				    <skipITs>${skip.integration.tests}</skipITs>
+				    <systemPropertyVariables>
+				        <log4j.configurationFile>-Dlog4j.configurationFile=src/test/resources/log4j2-test.xml</log4j.configurationFile>
+				    </systemPropertyVariables>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>2.17</version>
+				<configuration>
+				    <sourceDirectory>src</sourceDirectory>
+				    <configLocation>java-checkstyle.xml</configLocation>
+				    <failOnViolation>${checkstyle.failOnViolation}</failOnViolation>
+				    <skip>${checkstyle.skip}</skip>
+				    <propertyExpansion>config_loc=.</propertyExpansion>
+				</configuration>
+				<executions>
+				    <execution>
+				        <id>checkstyle</id>
+				        <phase>verify</phase>
+				        <goals>
+				            <goal>check</goal>
+				        </goals>
+				    </execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>3.0.5</version>
+				<configuration>
+				    <threshold>Max</threshold>
+				    <effort>Medium</effort>
+				    <failOnError>${findbugs.failOnError}</failOnError>
+				    <skip>${findbugs.skip}</skip>
+				</configuration>
+				<executions>
+				    <execution>
+				        <id>findbugs</id>
+				        <phase>verify</phase>
+				        <goals>
+				            <goal>check</goal>
+				        </goals>
+				    </execution>
+				</executions>
+			</plugin>
+            <plugin>
+                <groupId>com.lewisd</groupId>
+                <artifactId>lint-maven-plugin</artifactId>
+                <version>0.0.11</version>
+                <configuration>
+                    <failOnViolation>${lint.failOnViolation}</failOnViolation>
+                    <onlyRunRules>
+                        <rule>RedundantDepVersion</rule>
+                        <rule>RedundantPluginVersion</rule>
+                        <rule>VersionProp</rule>
+                        <rule>DuplicateDep</rule>
+                        <rule>ExecutionId</rule>
+                        <rule>DotVersionProperty</rule>
+                        <rule>GAVOrder</rule>
+                    </onlyRunRules>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>pom-lint</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
 			    <groupId>org.sonarsource.scanner.maven</groupId>
 			    <artifactId>sonar-maven-plugin</artifactId>
 			    <version>3.3.0.603</version>
             </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.0.0-M1</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
 	    </plugins>
 
 	</build>

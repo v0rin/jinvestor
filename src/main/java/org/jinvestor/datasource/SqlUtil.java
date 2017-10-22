@@ -13,21 +13,21 @@ import org.jinvestor.exception.AppRuntimeException;
  */
 public class SqlUtil {
 
-	private SqlUtil() {
-		throw new InstantiationError("This class should not be instantiated");
-	}
+    private SqlUtil() {
+        throw new InstantiationError("This class should not be instantiated");
+    }
 
-	public static List<String> getResultSetColumns(ResultSet resultSet) {
-		List<String> resultSetColumns = new ArrayList<>();
-		try {
-			for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
-				resultSetColumns.add(resultSet.getMetaData().getColumnName(i));
-			}
-		} catch (SQLException e) {
-			throw new AppRuntimeException(e);
-		}
+    public static List<String> getResultSetColumns(ResultSet resultSet) {
+        List<String> resultSetColumns = new ArrayList<>();
+        try {
+            for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); i++) {
+                resultSetColumns.add(resultSet.getMetaData().getColumnName(i));
+            }
+        }
+        catch (SQLException e) {
+            throw new AppRuntimeException(e);
+        }
 
-		return resultSetColumns;
-	}
-
+        return resultSetColumns;
+    }
 }

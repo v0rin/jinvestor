@@ -20,39 +20,40 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 public class ResultSetToBarConverter implements IConverter<ResultSet, Bar> {
 
-	private boolean isFirstTimeCalled = true;
-	private IEntityMetaData<Bar> entityMetaData;
+    private boolean isFirstTimeCalled = true;
+    private IEntityMetaData<Bar> entityMetaData;
 
-	public ResultSetToBarConverter() {
-		this.entityMetaData = EntityMetaDataFactory.get(Bar.class);
-	}
+    public ResultSetToBarConverter() {
+        this.entityMetaData = EntityMetaDataFactory.get(Bar.class);
+    }
 
-	@Override
-	public Bar apply(ResultSet resultSet) {
-		if (isFirstTimeCalled) {
-			validateColumns(resultSet, entityMetaData);
-			isFirstTimeCalled = false;
-		}
+    @Override
+    public Bar apply(ResultSet resultSet) {
+        if (isFirstTimeCalled) {
+            validateColumns(resultSet, entityMetaData);
+            isFirstTimeCalled = false;
+        }
 
-		try {
-			return new Bar(resultSet.getString(1),
-					   	   resultSet.getTimestamp(2),
-					   	   resultSet.getDouble(3),
-					   	   resultSet.getDouble(4),
-					   	   resultSet.getDouble(5),
-					   	   resultSet.getDouble(6),
-					   	   resultSet.getLong(7));
-		}
-		catch (SQLException e) {
-			throw new AppRuntimeException(e);
-		}
-	}
+        try {
+            int i = 1;
+            return new Bar(resultSet.getString(i++),
+                              resultSet.getTimestamp(i++),
+                              resultSet.getDouble(i++),
+                              resultSet.getDouble(i++),
+                              resultSet.getDouble(i++),
+                              resultSet.getDouble(i++),
+                              resultSet.getLong(i++));
+        }
+        catch (SQLException e) {
+            throw new AppRuntimeException(e);
+        }
+    }
 
-	private void validateColumns(ResultSet resultSet, IEntityMetaData<Bar> entityMetaData) {
-		List<String> entityColumns = Arrays.asList(entityMetaData.getColumns());
-		List<String> resultSetColumns = SqlUtil.getResultSetColumns(resultSet);
-		checkArgument(resultSetColumns.equals(entityColumns),
-				"ResultSet columns and Entity columns need to be equal to use this converter. " +
-				"ResultSet columns=" + resultSetColumns + "; entity columns=" + entityColumns);
-	}
+    private void validateColumns(ResultSet resultSet, IEntityMetaData<Bar> entityMetaData) {
+        List<String> entityColumns = Arrays.asList(entityMetaData.getColumns());
+        List<String> resultSetColumns = SqlUtil.getResultSetColumns(resultSet);
+        checkArgument(resultSetColumns.equals(entityColumns),
+                "ResultSet columns and Entity columns need to be equal to use this converter. " +
+                "ResultSet columns=" + resultSetColumns + "; entity columns=" + entityColumns);
+    }
 }

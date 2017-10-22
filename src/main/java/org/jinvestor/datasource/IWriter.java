@@ -8,5 +8,5 @@ import java.util.stream.Stream;
  * @author Adam
  */
 public interface IWriter<T> extends AutoCloseable {
-	void write(Stream<T> incomingStream) throws IOException;
+    void write(Stream<T> incomingStream) throws IOException;
 }

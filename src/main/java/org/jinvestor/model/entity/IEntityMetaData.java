@@ -6,12 +6,12 @@ package org.jinvestor.model.entity;
  */
 public interface IEntityMetaData<T> {
 
-	Class<T> getClazz();
+    Class<T> getClazz();
 
-	String getTableName();
+    String getTableName();
 
-	String[] getColumns();
+    String[] getColumns();
 
-	String getCreateTableSql();
+    String getCreateTableSql();
 
 }
