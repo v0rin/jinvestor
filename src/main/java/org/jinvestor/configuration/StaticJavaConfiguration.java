@@ -13,7 +13,7 @@ import org.jinvestor.exception.AppRuntimeException;
 */
 public class StaticJavaConfiguration implements IConfiguration {
 
-    protected static final String BAR_DAILY_DB_CONNECTION_STRING = "jdbc:sqlite:datasource/sqlite/bar.daily.sqlite";
+    protected static final String BAR_DAILY_DB_CONNECTION_STRING = "jdbc:sqlite:datasource/sqlite/bar_daily.sqlite";
 
     private Map<ConfKeys, String> values;
 

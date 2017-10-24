@@ -3,20 +3,17 @@ package org.jinvestor.datasource.converter;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jinvestor.model.Currency;
-import org.jinvestor.time.DateTimeConverterFactory;
-
 /**
  *
  * @author Adam
  */
-public class YahooCsvDailyBarToDbRowConverter extends CsvBarToDbRowConverter {
+public class Yahoo {
 
-    public YahooCsvDailyBarToDbRowConverter(Currency currency) {
-        super(getCsvToDbColumnsMappings(), DateTimeConverterFactory.getDateToDateTimeEodConverter(), currency);
+    private Yahoo() {
+        throw new InstantiationError("This class should not be instantiated");
     }
 
-    public static Map<String, String> getCsvToDbColumnsMappings() {
+    public static Map<String, String> getStocksCsvToDbColumnsMappings() {
         Map<String, String> inputToOutputColumnMappings = new HashMap<>();
         inputToOutputColumnMappings.put("Symbol", "symbol");
         inputToOutputColumnMappings.put("Date", "timestamp");

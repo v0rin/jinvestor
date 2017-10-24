@@ -3,6 +3,9 @@ package org.jinvestor.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 /**
  * @author Adam
  */
@@ -48,5 +51,34 @@ public class Instrument {
 
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (!(object instanceof Instrument)) {
+            return false;
+        }
+        Instrument rhs = (Instrument) object;
+        return new EqualsBuilder().append(this.codes, rhs.codes)
+                                  .append(this.description, rhs.description)
+                                  .append(this.id, rhs.id)
+                                  .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(-2103055395, 1354241493)
+                    .append(this.codes)
+                    .append(this.description)
+                    .append(this.id)
+                    .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Instrument [id=" + id + ", codes=" + codes + "]";
     }
 }

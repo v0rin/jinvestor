@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jinvestor.datasource.converter.CsvBarToDbRowConverter;
-import org.jinvestor.datasource.converter.YahooCsvDailyBarToDbRowConverter;
+import org.jinvestor.datasource.converter.Yahoo;
 import org.jinvestor.datasource.db.FastRawDbWriter;
 import org.jinvestor.datasource.file.CsvReader;
 import org.jinvestor.model.Bar;
@@ -69,10 +69,10 @@ public class CsvToSqliteTest {
 //                                                            BarTestUtil.getStandardCsvColumnsMappings(),
 //                                                            barEntityMetaData);
         IDateTimeConverter<String, String> dateTimeConverter = DateTimeConverterFactory.getDateToDateTimeEodConverter();
-        IConverter<String[], Object[]> converter = new CsvBarToDbRowConverter(
-                                                        YahooCsvDailyBarToDbRowConverter.getCsvToDbColumnsMappings(),
+        IConverter<String[], Object[]> converter = new CsvBarToDbRowConverter.Builder(
+                                                        Yahoo.getStocksCsvToDbColumnsMappings(),
                                                         dateTimeConverter,
-                                                        Currency.of(Code.USD));
+                                                        Currency.of(Code.USD)).build();
         IWriter<Object[]> writer = new FastRawDbWriter(DB_CONNECTION_STRING,
                                               barEntityMetaData.getTableName(),
                                               barEntityMetaData.getColumns());

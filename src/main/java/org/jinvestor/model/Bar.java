@@ -47,6 +47,18 @@ public class Bar {
     }
 
     @SuppressWarnings("checkstyle:ParameterNumber")
+    public Bar(Instrument instrument,
+               Timestamp dateTime,
+               Double open,
+               Double high,
+               Double low,
+               Double close,
+               Long volume,
+               Currency currency) {
+        this(instrument.getId(), dateTime, open, high, low, close, volume, currency.getCode());
+    }
+
+    @SuppressWarnings("checkstyle:ParameterNumber")
     public Bar(String symbol,
                Timestamp dateTime,
                Double open,
@@ -54,8 +66,21 @@ public class Bar {
                Double low,
                Double close,
                Long volume,
-               Currency.Code currency) {
-        this(symbol, dateTime, open, high, low, close, volume, currency.name());
+               Currency currency) {
+        this(symbol, dateTime, open, high, low, close, volume, currency.getCode());
+    }
+
+
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    public Bar(Instrument instrument,
+               Timestamp dateTime,
+               Double open,
+               Double high,
+               Double low,
+               Double close,
+               Long volume,
+               String currency) {
+        this(instrument.getId(), dateTime, open, high, low, close, volume, currency);
     }
 
     @SuppressFBWarnings(value="EI_EXPOSE_REP2")
@@ -155,6 +180,7 @@ public class Bar {
         result = prime * result + ((low == null) ? 0 : low.hashCode());
         result = prime * result + ((close == null) ? 0 : close.hashCode());
         result = prime * result + ((volume == null) ? 0 : volume.hashCode());
+        result = prime * result + ((currency == null) ? 0 : currency.hashCode());
         return result;
     }
 
@@ -173,13 +199,14 @@ public class Bar {
                        .append(low, rhs)
                        .append(close, rhs)
                        .append(volume, rhs)
+                       .append(currency, rhs)
                        .isEquals();
     }
 
     @Override
     public String toString() {
         return "Bar [symbol=" + symbol + ", timestamp=" + timestamp + ", open=" + open + ", high=" + high + ", "
-                + "low=" + low + ", close=" + close + ", volume=" + volume + "]";
+                + "low=" + low + ", close=" + close + ", volume=" + volume + ", currency=" + currency + "]";
     }
 
 
