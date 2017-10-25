@@ -22,7 +22,7 @@ public class YesNoCommandPrompt<T> {
     public T run() {
         final String yesOption = "y";
         final String noOption = "n";
-        try (Scanner scanner = new Scanner(System.in)) {
+        try (Scanner scanner = new Scanner(System.in, "UTF-8")) {
             while (true) {
                 System.out.print(prompt + " [" + yesOption + "/" + noOption + "]: ");
                 String option = scanner.next();

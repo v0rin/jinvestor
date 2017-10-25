@@ -51,6 +51,7 @@ public class EntityMetaData<T> implements IEntityMetaData<T> {
 
     @Override
     public String getCreateTableSql() {
+        validateAnnotations();
         CreateTableSegmentBuilder builder = SQLiteQueryBuilder
                 .create()
                 .table(getTableName());

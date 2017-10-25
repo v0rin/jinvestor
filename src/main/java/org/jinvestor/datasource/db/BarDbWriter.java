@@ -3,7 +3,6 @@ package org.jinvestor.datasource.db;
 import java.io.IOException;
 import java.util.stream.Stream;
 
-import org.jinvestor.datasource.IConverter;
 import org.jinvestor.datasource.IWriter;
 import org.jinvestor.datasource.converter.BarToDbRowConverter;
 import org.jinvestor.model.Bar;
@@ -14,8 +13,7 @@ import org.jinvestor.model.Bar;
  */
 public class BarDbWriter implements IWriter<Bar> {
 
-    IWriter<Object[]> rawDbWriter;
-    IConverter<Bar, Object[]> converter;
+    private IWriter<Object[]> rawDbWriter;
 
     public BarDbWriter(String dbConnectionString) {
         rawDbWriter = new FastRawDbWriter(dbConnectionString, Bar.class);

@@ -20,7 +20,7 @@
 	    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	    <skipTests>false</skipTests>
-	    <skip.integration-tests>true</skip.integration-tests>
+	    <skip.integration.tests>true</skip.integration.tests>
 	    <skip.unit.tests>${skipTests}</skip.unit.tests>
 	    
 	    <skip.static.analysis>false</skip.static.analysis>
@@ -240,6 +240,13 @@
 		    <version>2.0.2-beta</version>
 		    <scope>test</scope>
 		</dependency>
+		<dependency>
+		    <groupId>pl.pragmatists</groupId>
+		    <artifactId>JUnitParams</artifactId>
+		    <version>1.1.0</version>
+		    <scope>test</scope>
+		</dependency>
+
 
 
 	</dependencies>

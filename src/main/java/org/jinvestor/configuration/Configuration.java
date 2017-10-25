@@ -13,9 +13,6 @@ public enum Configuration implements IConfiguration {
     private IConfiguration conf;
 
     public void initialize(IConfiguration configuration) {
-        if (conf != null) {
-            throw new UnsupportedOperationException("Configuration already set. It is not allowed to override it");
-        }
         this.conf = configuration;
     }
 

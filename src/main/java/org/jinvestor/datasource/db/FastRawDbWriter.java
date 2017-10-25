@@ -135,21 +135,11 @@ public class FastRawDbWriter implements IWriter<Object[]> {
                     .values((Object[])row)
                     .build();
 
-            Statement statement = null;
-            try {
-                statement = connection.createStatement();
+            try (Statement statement = connection.createStatement()) {
                 insertCount += statement.executeUpdate(insertSql);
             }
             catch (SQLException e) {
                 throw new AppRuntimeException("Could not add query to the batch; query=" + insertSql, e);
-            }
-            finally {
-                try {
-                    statement.close();
-                }
-                catch (SQLException e1) {
-                    throw new AppRuntimeException("Could not release resources (statement, connection)", e1);
-                }
             }
         });
 

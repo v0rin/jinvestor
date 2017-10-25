@@ -46,7 +46,7 @@ public class Bar {
     public Bar() {
     }
 
-    @SuppressWarnings("checkstyle:ParameterNumber")
+    @SuppressWarnings({"checkstyle:parameternumber", "squid:S00107"})
     public Bar(Instrument instrument,
                Timestamp dateTime,
                Double open,
@@ -58,7 +58,7 @@ public class Bar {
         this(instrument.getId(), dateTime, open, high, low, close, volume, currency.getCode());
     }
 
-    @SuppressWarnings("checkstyle:ParameterNumber")
+    @SuppressWarnings({"checkstyle:parameternumber", "squid:S00107"})
     public Bar(String symbol,
                Timestamp dateTime,
                Double open,
@@ -71,7 +71,7 @@ public class Bar {
     }
 
 
-    @SuppressWarnings("checkstyle:ParameterNumber")
+    @SuppressWarnings({"checkstyle:parameternumber", "squid:S00107"})
     public Bar(Instrument instrument,
                Timestamp dateTime,
                Double open,
@@ -83,8 +83,7 @@ public class Bar {
         this(instrument.getId(), dateTime, open, high, low, close, volume, currency);
     }
 
-    @SuppressFBWarnings(value="EI_EXPOSE_REP2")
-    @SuppressWarnings("checkstyle:ParameterNumber")
+    @SuppressWarnings({"checkstyle:parameternumber", "squid:S00107"})
     public Bar(String symbol,
                Timestamp dateTime,
                Double open,
@@ -186,21 +185,21 @@ public class Bar {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) return false;
         if (obj == this) return true;
-        if (obj.getClass() != getClass()) return false;
+        if (!(obj instanceof Bar)) return false;
         Bar rhs = (Bar) obj;
 
         return new EqualsBuilder()
-                       .append(symbol, rhs)
-                       .append(timestamp, rhs)
-                       .append(open, rhs)
-                       .append(high, rhs)
-                       .append(low, rhs)
-                       .append(close, rhs)
-                       .append(volume, rhs)
-                       .append(currency, rhs)
-                       .isEquals();
+                        .append(this.symbol, rhs.symbol)
+                        .append(this.timestamp, rhs.timestamp)
+                        .append(this.open, rhs.open)
+                        .append(this.high, rhs.high)
+                        .append(this.low, rhs.low)
+                        .append(this.close, rhs.close)
+                        .append(this.volume, rhs.volume)
+                        .append(this.currency, rhs.currency)
+                        .isEquals();
+
     }
 
     @Override
@@ -208,6 +207,4 @@ public class Bar {
         return "Bar [symbol=" + symbol + ", timestamp=" + timestamp + ", open=" + open + ", high=" + high + ", "
                 + "low=" + low + ", close=" + close + ", volume=" + volume + ", currency=" + currency + "]";
     }
-
-
 }

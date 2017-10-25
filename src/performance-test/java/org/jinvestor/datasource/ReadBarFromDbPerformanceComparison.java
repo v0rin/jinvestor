@@ -22,7 +22,7 @@ import com.google.common.base.Stopwatch;
  *
  * @author Adam
  */
-public class ReadBarFromDbPerformanceTest {
+public class ReadBarFromDbPerformanceComparison {
 
     private static final Logger LOG = LogManager.getLogger();
 

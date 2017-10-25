@@ -11,7 +11,7 @@ public class StaticJavaConfigurationTest {
     @Test
     public void shouldInitializeCorrectly() {
         // given
-        IConfiguration conf = new TestStaticJavaConfiguration();
+        IConfiguration conf = new TestStaticJavaConfiguration(ConfKeys.class);
         String expected = TestStaticJavaConfiguration.BAR_DAILY_DB_CONNECTION_STRING;
 
         // when
@@ -22,7 +22,11 @@ public class StaticJavaConfigurationTest {
     }
 
 
-    private static class TestStaticJavaConfiguration extends StaticJavaConfiguration {
+    private static class TestStaticJavaConfiguration extends StaticJavaConfiguration<ConfKeys> {
         protected static final String BAR_DAILY_DB_CONNECTION_STRING = "test-value";
+
+        TestStaticJavaConfiguration(Class<ConfKeys> type) {
+            super(type);
+        }
     }
 }

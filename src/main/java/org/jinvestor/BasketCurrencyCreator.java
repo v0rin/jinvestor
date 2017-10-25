@@ -42,11 +42,11 @@ public class BasketCurrencyCreator implements IBasketCurrencyCreator {
     private Instrument basketCurrency;
 
 
-    public BasketCurrencyCreator(String name, Map<Currency, Double> basketComposition) {
+    public BasketCurrencyCreator(Currency currency, Map<Currency, Double> basketComposition) {
         checkArgument(basketComposition.values().stream().mapToDouble(Double::doubleValue).sum() == 1d,
                       "Weights need to add up to 1; basketComposition=" + basketComposition);
         this.basketComposition = convertCurrencyMapToInstrumentMap(basketComposition);
-        basketCurrency = Instrument.of(name + REF_CURRENCY.getCode());
+        basketCurrency = Instrument.of(currency.getCode() + REF_CURRENCY.getCode());
     }
 
 
@@ -61,7 +61,8 @@ public class BasketCurrencyCreator implements IBasketCurrencyCreator {
             bar.setOpen(Double.valueOf(counter));
             return bar;
         };
-        long daysBetween = ChronoUnit.DAYS.between(from, to); // should be working days
+        // TODO (AF) should be working days
+        long daysBetween = ChronoUnit.DAYS.between(from, to);
         Stream<Bar> barStream1 = LongStream.rangeClosed(0, daysBetween).boxed().map(barMapper);
 
 
@@ -93,10 +94,10 @@ public class BasketCurrencyCreator implements IBasketCurrencyCreator {
             });
             Bar bar = new Bar(basketCurrency,
                               currTimestamp,
-                              open.get(),
-                              high.get(),
-                              low.get(),
-                              close.get(),
+                              1 / open.get(),
+                              1 / high.get(),
+                              1 / low.get(),
+                              1 / close.get(),
                               Long.MAX_VALUE,
                               REF_CURRENCY);
 

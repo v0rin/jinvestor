@@ -30,13 +30,13 @@ import com.google.common.util.concurrent.AtomicDouble;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-public class BasketCurrencyCreatorTest {
+public class BasketCurrencyCreatorIT {
 
     private static final Logger LOG = LogManager.getLogger();
 
     @Before
     public void setUp() {
-        Configuration.INSTANCE.initialize(new StaticJavaConfiguration());
+        Configuration.INSTANCE.initialize(new StaticJavaConfiguration(ConfKeys.class));
     }
 
 
@@ -94,14 +94,14 @@ public class BasketCurrencyCreatorTest {
         Instant to = Instant.parse("2000-01-10T23:59:59.999Z");
 
         Map<Currency, Double> basketComposition = new HashMap<>();
-        basketComposition.put(Currency.of(Code.USD), 0.3d);
-        basketComposition.put(Currency.of(Code.EUR), 0.3d);
-        basketComposition.put(Currency.of(Code.CNY), 0.2d);
-        basketComposition.put(Currency.of(Code.JPY), 0.1d);
+//        basketComposition.put(Currency.of(Code.USD), 0.3d);
+        basketComposition.put(Currency.of(Code.EUR), 0.4d);
+        basketComposition.put(Currency.of(Code.CNY), 0.3d);
+        basketComposition.put(Currency.of(Code.JPY), 0.2d);
         basketComposition.put(Currency.of(Code.GBP), 0.1d);
         //########################
 
-        IBasketCurrencyCreator creator = new BasketCurrencyCreator("BC1", basketComposition);
+        IBasketCurrencyCreator creator = new BasketCurrencyCreator(Currency.of(Code.BC1), basketComposition);
 
         Stream<Bar> currencyBasketBars = creator.create(from, to);
 
@@ -121,7 +121,7 @@ public class BasketCurrencyCreatorTest {
         Map<Currency, Double> currencyMap = new HashMap<>();
         currencyMap.put(Currency.of(Code.USD), 0d);
         currencyMap.put(Currency.of(Code.EUR), 1d);
-        BasketCurrencyCreator creator = new BasketCurrencyCreator("BC1", currencyMap);
+        BasketCurrencyCreator creator = new BasketCurrencyCreator(Currency.of(Code.BC1), currencyMap);
 
         Map<Instrument, Double> expected = new HashMap<>();
         expected.put(Instrument.of(Code.USD.name() + Code.USD.name()), currencyMap.get(Currency.of(Code.USD)));

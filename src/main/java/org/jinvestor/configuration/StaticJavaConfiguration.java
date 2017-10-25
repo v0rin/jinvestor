@@ -1,33 +1,34 @@
 package org.jinvestor.configuration;
 
 import java.lang.reflect.Field;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.jinvestor.ConfKeys;
 import org.jinvestor.exception.AppRuntimeException;
 
 /**
 *
 * @author Adam
 */
-public class StaticJavaConfiguration implements IConfiguration {
+public class StaticJavaConfiguration<T extends Enum<T> & IConfigurationKey> implements IConfiguration {
 
     protected static final String BAR_DAILY_DB_CONNECTION_STRING = "jdbc:sqlite:datasource/sqlite/bar_daily.sqlite";
 
-    private Map<ConfKeys, String> values;
+    private Map<T, String> values;
+    private Class<T> type;
 
-    public StaticJavaConfiguration() {
-        values = new EnumMap<>(ConfKeys.class);
+    public StaticJavaConfiguration(Class<T> type) {
+        this.type = type;
+        this.values = new HashMap<>();
         initializeValues();
     }
 
     private void initializeValues() {
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
-            if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+            if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) && !field.getName().equals("$jacocoData")) {
                 try {
-                    ConfKeys key = ConfKeys.valueOf(field.getName());
+                    T key = T.valueOf(type, field.getName());
                     values.put(key, (String)field.get(null));
                 }
                 catch (IllegalArgumentException e) {
@@ -39,6 +40,14 @@ public class StaticJavaConfiguration implements IConfiguration {
                 }
             }
         }
+    }
+
+    public void setValue(T key, String value) {
+        values.put(key, value);
+    }
+
+    public void setValues(Map<T, String> newValues) {
+        values.putAll(newValues);
     }
 
     @Override

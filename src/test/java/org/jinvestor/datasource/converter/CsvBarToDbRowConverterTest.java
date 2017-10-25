@@ -23,7 +23,6 @@ public class CsvBarToDbRowConverterTest {
     private static final String LOW_COL = "Low";
     private static final String CLOSE_COL = "Close";
     private static final String VOLUME_COL = "Volume";
-    private static final String CURRENCY_COL = "Currency";
 
     private static final Instrument INSTRUMENT = Instrument.of(Instrument.Code.SPY);
     private static final Currency CURRENCY = Currency.of(Code.EUR);
