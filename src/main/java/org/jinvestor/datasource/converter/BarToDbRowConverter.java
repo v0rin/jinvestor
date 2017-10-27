@@ -19,7 +19,7 @@ public class BarToDbRowConverter implements IConverter<Bar, Object[]> {
                 bar.getLow(),
                 bar.getClose(),
                 bar.getVolume(),
-                bar.getCurrency()
+                bar.getCurrencyCode()
         };
     }
 }

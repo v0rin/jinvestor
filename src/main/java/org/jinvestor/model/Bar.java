@@ -40,66 +40,30 @@ public class Bar {
     public Long volume;
 
     @Column(name="currency", columnDefinition="TEXT")
-    public Currency currency;
+    public String currencyCode;
 
 
     public Bar() {
     }
 
-    @SuppressWarnings({"checkstyle:parameternumber", "squid:S00107"})
-    public Bar(Instrument instrument,
-               Timestamp dateTime,
-               Double open,
-               Double high,
-               Double low,
-               Double close,
-               Long volume,
-               Currency currency) {
-        this(instrument.getId(), dateTime, open, high, low, close, volume, currency.getCode());
-    }
 
     @SuppressWarnings({"checkstyle:parameternumber", "squid:S00107"})
     public Bar(String symbol,
-               Timestamp dateTime,
+               Timestamp timestamp,
                Double open,
                Double high,
                Double low,
                Double close,
                Long volume,
-               Currency currency) {
-        this(symbol, dateTime, open, high, low, close, volume, currency.getCode());
-    }
-
-
-    @SuppressWarnings({"checkstyle:parameternumber", "squid:S00107"})
-    public Bar(Instrument instrument,
-               Timestamp dateTime,
-               Double open,
-               Double high,
-               Double low,
-               Double close,
-               Long volume,
-               String currency) {
-        this(instrument.getId(), dateTime, open, high, low, close, volume, currency);
-    }
-
-    @SuppressWarnings({"checkstyle:parameternumber", "squid:S00107"})
-    public Bar(String symbol,
-               Timestamp dateTime,
-               Double open,
-               Double high,
-               Double low,
-               Double close,
-               Long volume,
-               String currency) {
+               String currencyCode) {
         this.symbol = symbol;
-        this.timestamp = dateTime;
+        this.timestamp = timestamp;
         this.open = open;
         this.high = high;
         this.low = low;
         this.close = close;
         this.volume = volume;
-        this.currency = new Currency(currency);
+        this.currencyCode = currencyCode;
     }
 
 
@@ -160,12 +124,12 @@ public class Bar {
         this.volume = volume;
     }
 
-    public Currency getCurrency() {
-        return currency;
+    public String getCurrencyCode() {
+        return currencyCode;
     }
 
-    public void setCurrency(Currency currency) {
-        this.currency = currency;
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
     }
 
     @Override
@@ -179,7 +143,7 @@ public class Bar {
         result = prime * result + ((low == null) ? 0 : low.hashCode());
         result = prime * result + ((close == null) ? 0 : close.hashCode());
         result = prime * result + ((volume == null) ? 0 : volume.hashCode());
-        result = prime * result + ((currency == null) ? 0 : currency.hashCode());
+        result = prime * result + ((currencyCode == null) ? 0 : currencyCode.hashCode());
         return result;
     }
 
@@ -197,7 +161,7 @@ public class Bar {
                         .append(this.low, rhs.low)
                         .append(this.close, rhs.close)
                         .append(this.volume, rhs.volume)
-                        .append(this.currency, rhs.currency)
+                        .append(this.currencyCode, rhs.currencyCode)
                         .isEquals();
 
     }
@@ -205,6 +169,6 @@ public class Bar {
     @Override
     public String toString() {
         return "Bar [symbol=" + symbol + ", timestamp=" + timestamp + ", open=" + open + ", high=" + high + ", "
-                + "low=" + low + ", close=" + close + ", volume=" + volume + ", currency=" + currency + "]";
+                + "low=" + low + ", close=" + close + ", volume=" + volume + ", currencyCode=" + currencyCode + "]";
     }
 }

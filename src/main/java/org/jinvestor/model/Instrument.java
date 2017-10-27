@@ -1,54 +1,60 @@
 package org.jinvestor.model;
 
+import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jinvestor.timeseriesfeed.BarFeed;
+import org.jinvestor.timeseriesfeed.TimeSeriesFreq;
 
 /**
  * @author Adam
  */
-public class Instrument {
+public class Instrument implements IInstrument {
 
-    public enum Code {
-        /**
-         * Standard & Poor's 500
-         */
-        SPY;
-    }
-
-    private String id;
-    private List<String> codes;
+    private String symbol;
+    private List<String> aliases;
+    private String currencyCode;
     private String description;
 
-    public Instrument(Code code) {
-        this(code.name());
+    public Instrument(String symbol, String currencyCode) {
+        this.symbol = symbol;
+        this.aliases = new ArrayList<>();
+        this.aliases.add(symbol);
+        this.currencyCode = currencyCode;
+        this.description = symbol;
     }
 
-    public Instrument(String code) {
-        id = code;
-        codes = new ArrayList<>();
-        codes.add(code);
-        description = code;
+    @Override
+    public Stream<Bar> streamDaily(Instant from, Instant to) throws IOException {
+        return stream(from, to, TimeSeriesFreq.DAILY);
     }
 
-    public static Instrument of(String code) {
-        return new Instrument(code);
+    @Override
+    public Stream<Bar> stream(Instant from, Instant to, TimeSeriesFreq frequency) throws IOException {
+        return new BarFeed(frequency, this).get(from, to);
     }
 
-    public static Instrument of(Instrument.Code code) {
-        return of(code.name());
+    @Override
+    public String getSymbol() {
+        return symbol;
     }
 
-    public String getId() {
-        return id;
+    @Override
+    public List<String> getAliases() {
+        return aliases;
     }
 
-    public List<String> getCodes() {
-        return codes;
+    @Override
+    public String getCurrencyCode() {
+        return currencyCode;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
@@ -62,23 +68,25 @@ public class Instrument {
             return false;
         }
         Instrument rhs = (Instrument) object;
-        return new EqualsBuilder().append(this.codes, rhs.codes)
+        return new EqualsBuilder().append(this.symbol, rhs.symbol)
+                                  .append(this.aliases, rhs.aliases)
+                                  .append(this.currencyCode, rhs.currencyCode)
                                   .append(this.description, rhs.description)
-                                  .append(this.id, rhs.id)
                                   .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(-2103055395, 1354241493)
-                    .append(this.codes)
+                    .append(this.symbol)
+                    .append(this.aliases)
+                    .append(this.currencyCode)
                     .append(this.description)
-                    .append(this.id)
                     .toHashCode();
     }
 
     @Override
     public String toString() {
-        return "Instrument [id=" + id + ", codes=" + codes + "]";
+        return "Instrument [symbol=" + symbol + ", aliases=" + aliases + ", currencyCode=" + currencyCode + "]";
     }
 }

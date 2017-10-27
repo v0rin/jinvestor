@@ -1,5 +1,8 @@
 package org.jinvestor.app;
 
+import static org.jinvestor.model.Instruments.CNY;
+import static org.jinvestor.model.Instruments.USD;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,8 +20,7 @@ import org.jinvestor.datasource.EtlJobFactory;
 import org.jinvestor.exception.AppRuntimeException;
 import org.jinvestor.io.YesNoCommandPrompt;
 import org.jinvestor.model.Bar;
-import org.jinvestor.model.Currency;
-import org.jinvestor.model.Currency.Code;
+import org.jinvestor.model.IInstrument;
 import org.jinvestor.model.Instrument;
 import org.jinvestor.model.entity.EntityMetaDataFactory;
 
@@ -50,7 +52,7 @@ public class Etl {
         //#### CONFIGURATION #####
         String csvPath = DATASOURCE_ROOT_PATH + "csv/yahoo.csv";
         String dbPath = STANDARD_DAILY_DB_PATH;
-        Currency currency = Currency.of(Code.USD);
+        String currencyCode = USD;
         //########################
 
         if (!new File(dbPath).exists() || (new File(dbPath).exists() && deleteOldDbWizard(dbPath))) {
@@ -58,7 +60,8 @@ public class Etl {
         }
 
         Stopwatch sw = Stopwatch.createStarted();
-        EtlJobFactory.getYahooCsvStocksDailyBarsToDbEtl(csvPath, SQLITE_CONNECTION_PREFIX + dbPath, currency).execute();
+        EtlJobFactory.getYahooCsvStocksDailyBarsToDbEtl(csvPath, SQLITE_CONNECTION_PREFIX + dbPath, currencyCode)
+            .execute();
         LOG.info("ETL job took " + sw.elapsed(TimeUnit.MILLISECONDS) + "ms");
     }
 
@@ -66,8 +69,8 @@ public class Etl {
         //#### CONFIGURATION #####
         String csvPath = DATASOURCE_ROOT_PATH + "csv/cnyusd_daily_stooq.csv";
         String dbPath = STANDARD_DAILY_DB_PATH;
-        Instrument instrument = Instrument.of("CNYUSD");
-        Currency currency = Currency.of(Code.USD);
+        IInstrument instrument = new Instrument(CNY, USD);
+        String currencyCode = USD;
         //########################
 
         if (!new File(dbPath).exists() || (new File(dbPath).exists() && deleteOldDbWizard(dbPath))) {
@@ -75,8 +78,8 @@ public class Etl {
         }
 
         Stopwatch sw = Stopwatch.createStarted();
-        EtlJobFactory.getStooqCsvFxDailyBarsToDbEtl(csvPath, SQLITE_CONNECTION_PREFIX + dbPath, instrument, currency)
-            .execute();
+        EtlJobFactory.getStooqCsvFxDailyBarsToDbEtl(
+                csvPath, SQLITE_CONNECTION_PREFIX + dbPath, instrument, currencyCode).execute();
         LOG.info("ETL job took " + sw.elapsed(TimeUnit.MILLISECONDS) + "ms");
     }
 

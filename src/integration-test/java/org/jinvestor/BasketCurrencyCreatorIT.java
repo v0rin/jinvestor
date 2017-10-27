@@ -1,13 +1,18 @@
 package org.jinvestor;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.jinvestor.model.Instruments.BC1;
+import static org.jinvestor.model.Instruments.CNY;
+import static org.jinvestor.model.Instruments.EUR;
+import static org.jinvestor.model.Instruments.GBP;
+import static org.jinvestor.model.Instruments.JPY;
+import static org.jinvestor.model.Instruments.USD;
 
+import java.io.IOException;
+import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -20,15 +25,10 @@ import org.apache.logging.log4j.Logger;
 import org.jinvestor.configuration.Configuration;
 import org.jinvestor.configuration.StaticJavaConfiguration;
 import org.jinvestor.model.Bar;
-import org.jinvestor.model.Currency;
-import org.jinvestor.model.Currency.Code;
+import org.jinvestor.model.IInstrument;
 import org.jinvestor.model.Instrument;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.google.common.util.concurrent.AtomicDouble;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 public class BasketCurrencyCreatorIT {
 
@@ -36,13 +36,47 @@ public class BasketCurrencyCreatorIT {
 
     @Before
     public void setUp() {
-        Configuration.INSTANCE.initialize(new StaticJavaConfiguration(ConfKeys.class));
+        Configuration.INSTANCE.initialize(new StaticJavaConfiguration<ConfKeys>(ConfKeys.class));
     }
 
 
     @Test
+    public void testFxDates() throws IOException {
+        //#### CONFIGURATION #####
+        Instant from = Instant.parse("1971-01-04T23:59:59.999Z");
+        Instant to = Instant.parse("2020-01-15T23:59:59.999Z");
+        String currency = CNY;
+        String refCurrency = USD;
+        //########################
+
+        IInstrument instrument = new Instrument(currency, refCurrency);
+        Iterator<Bar> barIter = instrument.streamDaily(from, to).iterator();
+
+        long daysBetween = ChronoUnit.DAYS.between(from, to);
+        Timestamp timestamp = barIter.next().getTimestamp();
+        for (int i = 0; i < daysBetween; i++) {
+            Instant curr = ChronoUnit.DAYS.addTo(from, i);
+
+            Instant barInstant = timestamp.toLocalDateTime().atOffset(ZoneOffset.UTC).toInstant();
+            int dayOfWeek = curr.atZone(ZoneOffset.UTC).getDayOfWeek().getValue();
+//            LOG.info("curr=     " + curr);
+//            LOG.info("barInstant=" + barInstant);
+            if (!curr.equals(barInstant)) {
+                if (dayOfWeek < DayOfWeek.SATURDAY.getValue()) {
+                    LOG.info("no entry=" + curr);
+                }
+                continue;
+            }
+            if (dayOfWeek >= DayOfWeek.SATURDAY.getValue()) {
+                LOG.info("WEEKEND entry=" + curr);
+            }
+            timestamp = barIter.next().getTimestamp();
+        }
+    }
+
+    @Test
     @SuppressWarnings("checkstyle:magicnumber")
-    public void shoudGenerateStream() {
+    public void shouldGenerateStream() {
         int from = 0;
         int to = 10;
 
@@ -55,53 +89,24 @@ public class BasketCurrencyCreatorIT {
         barStream.forEach(LOG::info);
     }
 
-    @Test
-    @SuppressWarnings("checkstyle:magicnumber")
-    public void testCombiningStreams() {
-        // given
-        Instant from = Instant.parse("1999-12-31T00:00:00Z");
-        Instant to = Instant.parse("2000-01-05T23:59:59.999Z");
-
-        Map<Iterator<Integer>, Double> iterMap = new HashMap<>();
-        iterMap.put(Arrays.asList(1, 2, 3, 4, 1).stream().iterator(), 1d);
-        iterMap.put(Arrays.asList(3, 3, 1, 2, 1).stream().iterator(), 1d);
-        iterMap.put(Arrays.asList(2, 1, 5, 8, 4).stream().iterator(), 1d);
-
-        checkArgument(!from.isAfter(to), "'from' is after 'to'");
-        Instant curr = from;
-        while (!curr.isAfter(to)) {
-            if (curr.atZone(ZoneOffset.UTC).getDayOfWeek().getValue() >= DayOfWeek.SATURDAY.getValue()) {
-                curr = curr.plus(1, ChronoUnit.DAYS);
-                continue;
-            }
-            AtomicDouble d = new AtomicDouble();
-            iterMap.forEach((barStream, weight) -> {
-                // TODO (AF) verify date
-                d.addAndGet(barStream.next() * weight);
-            });
-            LOG.info(curr + ": " + d);
-            curr = curr.plus(1, ChronoUnit.DAYS);
-        }
-    }
-
 
     @Test
     @SuppressWarnings("checkstyle:magicnumber")
     public void workInProgress() {
         //#### CONFIGURATION #####
-        String dbPath = "datasource/sqlite/bar_daily.sqlite";
         Instant from = Instant.parse("2000-01-01T00:00:00.000Z");
         Instant to = Instant.parse("2000-01-10T23:59:59.999Z");
 
-        Map<Currency, Double> basketComposition = new HashMap<>();
-//        basketComposition.put(Currency.of(Code.USD), 0.3d);
-        basketComposition.put(Currency.of(Code.EUR), 0.4d);
-        basketComposition.put(Currency.of(Code.CNY), 0.3d);
-        basketComposition.put(Currency.of(Code.JPY), 0.2d);
-        basketComposition.put(Currency.of(Code.GBP), 0.1d);
+        Map<IInstrument, Double> basketComposition = new HashMap<>();
+        String refCurrencyCode = USD;
+        basketComposition.put(new Instrument(USD, refCurrencyCode), 0.3d);
+        basketComposition.put(new Instrument(EUR, refCurrencyCode), 0.3d);
+        basketComposition.put(new Instrument(CNY, refCurrencyCode), 0.2d);
+        basketComposition.put(new Instrument(JPY, refCurrencyCode), 0.1d);
+        basketComposition.put(new Instrument(GBP, refCurrencyCode), 0.1d);
         //########################
 
-        IBasketCurrencyCreator creator = new BasketCurrencyCreator(Currency.of(Code.BC1), basketComposition);
+        IBasketCurrencyCreator creator = new BasketCurrencyCreator(new Instrument(BC1, USD), basketComposition);
 
         Stream<Bar> currencyBasketBars = creator.create(from, to);
 
@@ -112,25 +117,5 @@ public class BasketCurrencyCreatorIT {
 //        try (IWriter<Bar> barDbWriter = new BarDbWriter(dbConnectionString + dbPath)) {
 //            barDbWriter.write(currencyBasketBars);
 //        }
-    }
-
-
-    @Test
-    public void shouldConvertCurrencyMapToInstrumentMap() {
-        // given
-        Map<Currency, Double> currencyMap = new HashMap<>();
-        currencyMap.put(Currency.of(Code.USD), 0d);
-        currencyMap.put(Currency.of(Code.EUR), 1d);
-        BasketCurrencyCreator creator = new BasketCurrencyCreator(Currency.of(Code.BC1), currencyMap);
-
-        Map<Instrument, Double> expected = new HashMap<>();
-        expected.put(Instrument.of(Code.USD.name() + Code.USD.name()), currencyMap.get(Currency.of(Code.USD)));
-        expected.put(Instrument.of(Code.EUR.name() + Code.USD.name()), currencyMap.get(Currency.of(Code.EUR)));
-
-        // when
-        Map<Instrument, Double> instrumentMap = creator.convertCurrencyMapToInstrumentMap(currencyMap);
-
-        // then
-        assertThat(instrumentMap, is(expected));
     }
 }

@@ -1,6 +1,8 @@
 package org.jinvestor.datasource;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.jinvestor.model.Instruments.SPY;
+import static org.jinvestor.model.Instruments.USD;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
@@ -18,19 +20,14 @@ import org.jinvestor.ConfKeys;
 import org.jinvestor.configuration.Configuration;
 import org.jinvestor.configuration.StaticJavaConfiguration;
 import org.jinvestor.datasource.converter.CsvBarToDbRowConverter;
-import org.jinvestor.datasource.converter.Yahoo;
 import org.jinvestor.datasource.db.FastRawDbWriter;
 import org.jinvestor.datasource.file.CsvReader;
 import org.jinvestor.model.Bar;
-import org.jinvestor.model.Currency;
-import org.jinvestor.model.Currency.Code;
 import org.jinvestor.model.Instrument;
 import org.jinvestor.model.entity.EntityMetaDataFactory;
 import org.jinvestor.model.entity.IEntityMetaData;
 import org.jinvestor.time.DateTimeConverterFactory;
 import org.jinvestor.time.IDateTimeConverter;
-import org.jinvestor.timeseriesfeed.ITimeSeriesFeed;
-import org.jinvestor.timeseriesfeed.TimeSeriesFeedFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,8 +45,8 @@ public class CsvToSqliteTest {
     private static final String DB_CONNECTION_STRING = DB_CONNECTION_STRING_PREFIX + DB_PATH;
     private static final char SEPARATOR = ',';
 
-    private static final Instrument INSTRUMENT = Instrument.of(Instrument.Code.SPY);
-    private static final Currency CURRENCY = Currency.of(Code.USD);
+    private static final String SYMBOL = SPY;
+    private static final String CURRENCY_CODE = USD;
 
     private static final Instant FROM_FOREVER = Instant.parse("0000-01-01T23:59:59.999Z");
     private static final Instant TO_FOREVER = Instant.parse("9999-01-01T23:59:59.999Z");
@@ -80,14 +77,14 @@ public class CsvToSqliteTest {
     @SuppressWarnings("checkstyle:magicnumber")
     public void simpleCsvToSqliteRawTest() throws SQLException, IOException {
         // given
-        List<Bar> expected = Arrays.asList(new Bar(INSTRUMENT,
+        List<Bar> expected = Arrays.asList(new Bar(SYMBOL,
                                                    Timestamp.valueOf("1993-01-29 23:59:59.999"),
                                                    43.96870000, 43.96870000, 43.75000000, 43.93750000, 1003200L,
-                                                   CURRENCY),
-                                           new Bar(INSTRUMENT,
+                                                   CURRENCY_CODE),
+                                           new Bar(SYMBOL,
                                                    Timestamp.valueOf("1993-02-01 23:59:59.999"),
                                                    43.96870000, 44.25000000, 43.96870000, 44.25000000, 480500L,
-                                                   CURRENCY));
+                                                   CURRENCY_CODE));
 
         IReader<String[]> reader = new CsvReader(CSV_PATH, SEPARATOR);
 
@@ -95,7 +92,7 @@ public class CsvToSqliteTest {
         IConverter<String[], Object[]> converter = new CsvBarToDbRowConverter.Builder(
                                                            Yahoo.getStocksCsvToDbColumnsMappings(),
                                                            dateTimeConverter,
-                                                           Currency.of(Code.USD))
+                                                           USD)
                                                    .build();
 
         IWriter<Object[]> writer = new FastRawDbWriter(DB_CONNECTION_STRING,
@@ -108,8 +105,8 @@ public class CsvToSqliteTest {
         etlJob.execute();
 
         // then
-        ITimeSeriesFeed<Bar> barFeed = TimeSeriesFeedFactory.getDailyBarFeed(INSTRUMENT, CURRENCY);
-        List<Bar> actual = barFeed.get(FROM_FOREVER, TO_FOREVER).collect(Collectors.toList());
+        List<Bar> actual = new Instrument(SYMBOL, CURRENCY_CODE)
+                                .streamDaily(FROM_FOREVER, TO_FOREVER).collect(Collectors.toList());
         assertThat(actual, is(expected));
     }
 }

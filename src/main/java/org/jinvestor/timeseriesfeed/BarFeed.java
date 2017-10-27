@@ -11,8 +11,7 @@ import org.jinvestor.datasource.IReader;
 import org.jinvestor.datasource.converter.ResultSetToBarConverter;
 import org.jinvestor.datasource.db.DbReader;
 import org.jinvestor.model.Bar;
-import org.jinvestor.model.Currency;
-import org.jinvestor.model.Instrument;
+import org.jinvestor.model.IInstrument;
 import org.jinvestor.model.entity.EntityMetaDataFactory;
 import org.jinvestor.time.DateTimeFormatterFactory;
 
@@ -22,22 +21,21 @@ import com.alexfu.sqlitequerybuilder.api.SQLiteQueryBuilder;
  *
  * @author Adam
  */
-public class BarTimeSeriesFeed implements ITimeSeriesFeed<Bar>, AutoCloseable {
+public class BarFeed implements ITimeSeriesFeed<Bar>, AutoCloseable {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatterFactory.standardTimestamp();
 
     private TimeSeriesFreq frequency;
-    private Instrument instrument;
-    private Currency currency;
+    private IInstrument instrument;
+    private String currencyCode;
 
     private IReader<Bar> dbReader;
 
 
-    protected BarTimeSeriesFeed(TimeSeriesFreq frequency, Instrument instrument, Currency currency) {
+    public BarFeed(TimeSeriesFreq frequency, IInstrument instrument) {
         this.frequency = frequency;
         this.instrument = instrument;
-        this.currency = currency;
-
+        this.currencyCode = instrument.getCurrencyCode();
     }
 
 
@@ -46,8 +44,8 @@ public class BarTimeSeriesFeed implements ITimeSeriesFeed<Bar>, AutoCloseable {
         String selectQuery = SQLiteQueryBuilder
                 .select("*")
                 .from(EntityMetaDataFactory.get(Bar.class).getTableName())
-                .where("symbol = '" + instrument.getId() + "'")
-                .and("currency = '" + currency.getCode() + "'")
+                .where("symbol = '" + instrument.getSymbol() + "'")
+                .and("currency = '" + currencyCode + "'")
                 .and("timestamp >= '" + getUtcTimeAsString(from) + "'")
                 .and("timestamp <= '" + getUtcTimeAsString(to) + "'")
                 .build();

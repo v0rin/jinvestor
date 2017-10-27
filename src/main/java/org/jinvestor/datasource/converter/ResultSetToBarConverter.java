@@ -37,13 +37,13 @@ public class ResultSetToBarConverter implements IConverter<ResultSet, Bar> {
         try {
             int i = 1;
             return new Bar(resultSet.getString(i++),
-                              resultSet.getTimestamp(i++),
-                              resultSet.getDouble(i++),
-                              resultSet.getDouble(i++),
-                              resultSet.getDouble(i++),
-                              resultSet.getDouble(i++),
-                              resultSet.getLong(i++),
-                              resultSet.getString(i));
+                           resultSet.getTimestamp(i++),
+                           resultSet.getDouble(i++),
+                           resultSet.getDouble(i++),
+                           resultSet.getDouble(i++),
+                           resultSet.getDouble(i++),
+                           resultSet.getLong(i++),
+                           resultSet.getString(i));
         }
         catch (SQLException e) {
             throw new AppRuntimeException(e);

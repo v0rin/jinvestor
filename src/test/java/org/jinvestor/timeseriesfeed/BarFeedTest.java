@@ -15,13 +15,12 @@ import org.jinvestor.ConfKeys;
 import org.jinvestor.configuration.Configuration;
 import org.jinvestor.configuration.StaticJavaConfiguration;
 import org.jinvestor.model.Bar;
-import org.jinvestor.model.Currency;
-import org.jinvestor.model.Currency.Code;
 import org.jinvestor.model.Instrument;
+import org.jinvestor.model.Instruments;
 import org.junit.Before;
 import org.junit.Test;
 
-public class BarTimeSeriesFeedTest {
+public class BarFeedTest {
 
     private static final String TEST_RES_PATH =
             "src/test/resources/org/jinvestor/timeseriesfeed/bar-time-series-feed-test/";
@@ -29,8 +28,8 @@ public class BarTimeSeriesFeedTest {
     private static final String DB_CONNECTION_STRING_PREFIX = "jdbc:sqlite:";
     private static final String DB_CONNECTION_STRING = DB_CONNECTION_STRING_PREFIX + DB_PATH;
 
-    private static final Instrument INSTRUMENT = Instrument.of(Instrument.Code.SPY);
-    private static final Currency CURRENCY = Currency.of(Code.USD);
+    private static final String SYMBOL = Instruments.SPY;
+    private static final String CURRENCY_CODE = Instruments.USD;
 
     private static final Instant FROM_FOREVER = Instant.parse("0000-01-01T23:59:59.999Z");
     private static final Instant TO_FOREVER = Instant.parse("9999-01-01T23:59:59.999Z");
@@ -47,19 +46,18 @@ public class BarTimeSeriesFeedTest {
     @SuppressWarnings("checkstyle:magicnumber")
     public void shouldGetCorrectBars() throws IOException {
         // given
-        List<Bar> expected = Arrays.asList(new Bar(INSTRUMENT,
+        List<Bar> expected = Arrays.asList(new Bar(SYMBOL,
                                                    Timestamp.valueOf("1993-01-29 23:59:59.999"),
                                                    43.96870000, 43.96870000, 43.75000000, 43.93750000, 1003200L,
-                                                   CURRENCY),
-                                           new Bar(INSTRUMENT,
+                                                   CURRENCY_CODE),
+                                           new Bar(SYMBOL,
                                                    Timestamp.valueOf("1993-02-01 23:59:59.999"),
                                                    43.96870000, 44.25000000, 43.96870000, 44.25000000, 480500L,
-                                                   CURRENCY));
-
-        ITimeSeriesFeed<Bar> barFeed = TimeSeriesFeedFactory.getDailyBarFeed(INSTRUMENT, CURRENCY);
+                                                   CURRENCY_CODE));
 
         // then
-        List<Bar> actual = barFeed.get(FROM_FOREVER, TO_FOREVER).collect(Collectors.toList());
+        List<Bar> actual = new Instrument(SYMBOL, CURRENCY_CODE)
+                                .streamDaily(FROM_FOREVER, TO_FOREVER).collect(Collectors.toList());
         assertThat(actual, is(expected));
     }
 }

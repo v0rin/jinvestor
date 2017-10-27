@@ -1,13 +1,10 @@
 package org.jinvestor.datasource;
 
 import org.jinvestor.datasource.converter.CsvBarToDbRowConverter;
-import org.jinvestor.datasource.converter.Stooq;
-import org.jinvestor.datasource.converter.Yahoo;
 import org.jinvestor.datasource.db.FastRawDbWriter;
 import org.jinvestor.datasource.file.CsvReader;
 import org.jinvestor.model.Bar;
-import org.jinvestor.model.Currency;
-import org.jinvestor.model.Instrument;
+import org.jinvestor.model.IInstrument;
 import org.jinvestor.time.DateTimeConverterFactory;
 
 /**
@@ -24,13 +21,13 @@ public class EtlJobFactory {
 
     public static IEtlJob getYahooCsvStocksDailyBarsToDbEtl(String csvPath,
                                                             String dbConnectionString,
-                                                            Currency currency) {
+                                                            String currencyCode) {
         IReader<String[]> reader = new CsvReader(csvPath, STANDARD_CSV_SEPARATOR);
 
         IConverter<String[], Object[]> converter = new CsvBarToDbRowConverter.Builder(
                     Yahoo.getStocksCsvToDbColumnsMappings(),
                     DateTimeConverterFactory.getDateToDateTimeEodConverter(),
-                    currency)
+                    currencyCode)
                 .build();
 
         IWriter<Object[]> writer = new FastRawDbWriter(dbConnectionString, Bar.class);
@@ -40,14 +37,14 @@ public class EtlJobFactory {
 
     public static IEtlJob getStooqCsvFxDailyBarsToDbEtl(String csvPath,
                                                         String dbConnectionString,
-                                                        Instrument instrument,
-                                                        Currency currency) {
+                                                        IInstrument instrument,
+                                                        String currencyCode) {
         IReader<String[]> reader = new CsvReader(csvPath, STANDARD_CSV_SEPARATOR);
 
         IConverter<String[], Object[]> converter = new CsvBarToDbRowConverter.Builder(
                     Stooq.getFxCsvToDbColumnsMappings(),
                     DateTimeConverterFactory.getDateToDateTimeEodConverter(),
-                    currency)
+                    currencyCode)
                 .instrument(instrument)
                 .volume(Long.MAX_VALUE)
                 .build();

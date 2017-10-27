@@ -2,9 +2,7 @@ package org.jinvestor;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.time.DayOfWeek;
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,11 +15,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jinvestor.exception.AppRuntimeException;
 import org.jinvestor.model.Bar;
-import org.jinvestor.model.Currency;
-import org.jinvestor.model.Currency.Code;
-import org.jinvestor.model.Instrument;
-import org.jinvestor.timeseriesfeed.ITimeSeriesFeed;
-import org.jinvestor.timeseriesfeed.TimeSeriesFeedFactory;
+import org.jinvestor.model.IInstrument;
+import org.jinvestor.model.Instruments;
 
 import com.google.common.util.concurrent.AtomicDouble;
 
@@ -35,18 +30,17 @@ public class BasketCurrencyCreator implements IBasketCurrencyCreator {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private static final Currency REF_CURRENCY = Currency.of(Code.USD);
+    private static final String REF_CURRENCY_CODE = Instruments.USD;
 
-    private Map<Instrument, Double> basketComposition;
+    private IInstrument basketCurrency;
+    private Map<IInstrument, Double> basketComposition;
 
-    private Instrument basketCurrency;
 
-
-    public BasketCurrencyCreator(Currency currency, Map<Currency, Double> basketComposition) {
+    public BasketCurrencyCreator(IInstrument currency, Map<IInstrument, Double> basketComposition) {
         checkArgument(basketComposition.values().stream().mapToDouble(Double::doubleValue).sum() == 1d,
                       "Weights need to add up to 1; basketComposition=" + basketComposition);
-        this.basketComposition = convertCurrencyMapToInstrumentMap(basketComposition);
-        basketCurrency = Instrument.of(currency.getCode() + REF_CURRENCY.getCode());
+        this.basketComposition = basketComposition;
+        this.basketCurrency = currency;
     }
 
 
@@ -56,112 +50,77 @@ public class BasketCurrencyCreator implements IBasketCurrencyCreator {
 
         Map<Iterator<Bar>, Double> iteratorMap = getStreamIteratorMapForBasket(basketComposition, from, to);
 
-        Function<Long, Bar> barMapper = counter -> {
-            Bar bar = new Bar();
-            bar.setOpen(Double.valueOf(counter));
-            return bar;
-        };
         // TODO (AF) should be working days
+        // based on the testFxDates
         long daysBetween = ChronoUnit.DAYS.between(from, to);
-        Stream<Bar> barStream1 = LongStream.rangeClosed(0, daysBetween).boxed().map(barMapper);
 
+//        for (int offset = 0; offset <= daysBetween; offset++) {
+//        if (curr.atZone(ZoneOffset.UTC).getDayOfWeek().getValue() >= DayOfWeek.SATURDAY.getValue()) {
+//            continue;
+//        }
 
-        for (int offset = 0; offset <= daysBetween; offset++) {
+        Function<Long, Bar> barMapper = getIntToBarMapper(iteratorMap, from);
+
+        return LongStream.rangeClosed(0, daysBetween).boxed().map(barMapper);
+    }
+
+    private Function<Long, Bar> getIntToBarMapper(Map<Iterator<Bar>, Double> iteratorMap, Instant from) {
+        return offset -> {
             Instant curr = from.plus(offset, ChronoUnit.DAYS);
-            if (curr.isAfter(to)) {
-                throw new AppRuntimeException("curr.isAfter(to)");
-            }
-            if (curr.atZone(ZoneOffset.UTC).getDayOfWeek().getValue() >= DayOfWeek.SATURDAY.getValue()) {
-                continue;
-            }
-            AtomicDouble open = new AtomicDouble();
-            AtomicDouble high = new AtomicDouble();
-            AtomicDouble low = new AtomicDouble();
-            AtomicDouble close = new AtomicDouble();
-
+            AtomicPrices atomicPrices = new AtomicPrices();
             Timestamp currTimestamp = Timestamp.from(curr);
             iteratorMap.forEach((barStream, weight) -> {
-                Bar bar = barStream.next();
+                Bar bar = null;
+                if (barStream != null) {
+                    bar = barStream.next();
+                }
+                else {
+                    bar = new Bar("", currTimestamp, 1d, 1d, 1d, 1d, 0L, REF_CURRENCY_CODE);
+                }
 //                if (!bar.getTimestamp().equals(currTimestamp)) {
 //                    throw new AppRuntimeException(
 //                            "Malformed data for instrument " + bar.getSymbol() +
 //                            ". Timestamp should be " + currTimestamp + " but was " + bar.getTimestamp());
 //                }
-                open.addAndGet(bar.getOpen() * weight);
-                high.addAndGet(bar.getHigh() * weight);
-                low.addAndGet(bar.getLow() * weight);
-                close.addAndGet(bar.getClose() * weight);
+                atomicPrices.updateFromBarWithWeight(bar, weight);
             });
-            Bar bar = new Bar(basketCurrency,
-                              currTimestamp,
-                              1 / open.get(),
-                              1 / high.get(),
-                              1 / low.get(),
-                              1 / close.get(),
-                              Long.MAX_VALUE,
-                              REF_CURRENCY);
-
-            LOG.info(curr + ": " + bar);
-        }
-
-        return null;
+            return new Bar(basketCurrency.getSymbol(),
+                           currTimestamp,
+                           1 / atomicPrices.open.get(),
+                           1 / atomicPrices.high.get(),
+                           1 / atomicPrices.low.get(),
+                           1 / atomicPrices.close.get(),
+                           Long.MAX_VALUE,
+                           REF_CURRENCY_CODE);
+        };
     }
 
+    private static class AtomicPrices {
+        AtomicDouble open = new AtomicDouble();
+        AtomicDouble high = new AtomicDouble();
+        AtomicDouble low = new AtomicDouble();
+        AtomicDouble close = new AtomicDouble();
 
-    public Stream<Bar> createOld(Instant from, Instant to) {
-        checkArgument(!from.isAfter(to), "'from' is after 'to'");
-
-        Map<Iterator<Bar>, Double> iteratorMap = getStreamIteratorMapForBasket(basketComposition, from, to);
-
-        Instant curr = from;
-        while (!curr.isAfter(to)) {
-            if (curr.atZone(ZoneOffset.UTC).getDayOfWeek().getValue() >= DayOfWeek.SATURDAY.getValue()) {
-                curr = curr.plus(1, ChronoUnit.DAYS);
-                continue;
-            }
-            AtomicDouble open = new AtomicDouble();
-            AtomicDouble high = new AtomicDouble();
-            AtomicDouble low = new AtomicDouble();
-            AtomicDouble close = new AtomicDouble();
-
-            Timestamp currTimestamp = Timestamp.from(curr);
-            iteratorMap.forEach((barStream, weight) -> {
-                Bar bar = barStream.next();
-                if (!bar.getTimestamp().equals(currTimestamp)) {
-                    throw new AppRuntimeException(
-                            "Malformed data for instrument " + bar.getSymbol() +
-                            ". Timestamp should be " + currTimestamp + " but was " + bar.getTimestamp());
-                }
-                open.addAndGet(bar.getOpen() * weight);
-                high.addAndGet(bar.getHigh() * weight);
-                low.addAndGet(bar.getLow() * weight);
-                close.addAndGet(bar.getClose() * weight);
-            });
-            Bar bar = new Bar(basketCurrency,
-                              currTimestamp,
-                              open.get(),
-                              high.get(),
-                              low.get(),
-                              close.get(),
-                              Long.MAX_VALUE,
-                              REF_CURRENCY);
-
-            LOG.info(curr + ": " + bar);
-            curr = curr.plus(1, ChronoUnit.DAYS);
+        void updateFromBarWithWeight(Bar bar, Double weight) {
+            open.addAndGet(bar.getOpen() * weight);
+            high.addAndGet(bar.getHigh() * weight);
+            low.addAndGet(bar.getLow() * weight);
+            close.addAndGet(bar.getClose() * weight);
         }
-
-        return null;
     }
 
-
-    private Map<Iterator<Bar>, Double> getStreamIteratorMapForBasket(Map<Instrument, Double> basketComposition,
+    private Map<Iterator<Bar>, Double> getStreamIteratorMapForBasket(Map<IInstrument, Double> basketComposition,
                                                                      Instant from,
                                                                      Instant to) {
         Map<Iterator<Bar>, Double> iteratorMap = new HashMap<>();
-        basketComposition.forEach((instrument, weight) -> {
-            ITimeSeriesFeed<Bar> feed = TimeSeriesFeedFactory.getDailyBarFeed(instrument, REF_CURRENCY);
+        basketComposition.forEach((currency, weight) -> {
             try {
-                iteratorMap.put(feed.get(from, to).iterator(), weight);
+                Iterator<Bar> barIterator = null;
+                if (!currency.equals(REF_CURRENCY_CODE)) {
+                    barIterator = currency.streamDaily(from, to).iterator();
+                }
+                // puts a null key if currency is REF_CURRENCY
+                iteratorMap.put(barIterator, weight);
             }
             catch (IOException e) {
                 throw new AppRuntimeException(e);
@@ -169,17 +128,5 @@ public class BasketCurrencyCreator implements IBasketCurrencyCreator {
         });
 
         return iteratorMap;
-    }
-
-
-    protected Map<Instrument, Double> convertCurrencyMapToInstrumentMap(Map<Currency, Double> currencyMap) {
-        Map<Instrument, Double> instrumentMap = new HashMap<>();
-        currencyMap.forEach((currency, weight) -> instrumentMap.put(currencyToInstrument(currency), weight));
-
-        return instrumentMap;
-    }
-
-    private Instrument currencyToInstrument(Currency currency) {
-        return Instrument.of(currency.getCode() + REF_CURRENCY.getCode());
     }
 }

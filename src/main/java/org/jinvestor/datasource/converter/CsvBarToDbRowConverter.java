@@ -6,8 +6,7 @@ import java.util.Map;
 
 import org.jinvestor.datasource.IConverter;
 import org.jinvestor.model.Bar;
-import org.jinvestor.model.Currency;
-import org.jinvestor.model.Instrument;
+import org.jinvestor.model.IInstrument;
 import org.jinvestor.model.entity.EntityMetaDataFactory;
 import org.jinvestor.model.entity.IEntityMetaData;
 import org.jinvestor.time.IDateTimeConverter;
@@ -22,9 +21,9 @@ public class CsvBarToDbRowConverter implements IConverter<String[], Object[]> {
 
     private Map<String, String> inputToOutputColumnMappings;
     private IDateTimeConverter<String, String> dateTimeConverter;
-    private Instrument instrument;
+    private IInstrument instrument;
     private Long volume;
-    private Currency currency;
+    private String currencyCode;
 
     private IEntityMetaData<Bar> entityMetaData;
     private int addedColumnsCount;
@@ -33,15 +32,15 @@ public class CsvBarToDbRowConverter implements IConverter<String[], Object[]> {
 
     private CsvBarToDbRowConverter(Map<String, String> inputToOutputColumnMappings,
                                    IDateTimeConverter<String, String> dateTimeConverter,
-                                   Instrument instrument,
+                                   IInstrument instrument,
                                    Long volume,
-                                   Currency currency) {
+                                   String currencyCode) {
         this.inputToOutputColumnMappings = inputToOutputColumnMappings;
         this.entityMetaData = EntityMetaDataFactory.get(Bar.class);
         this.dateTimeConverter = dateTimeConverter;
         this.instrument = instrument;
         this.volume = volume;
-        this.currency = currency;
+        this.currencyCode = currencyCode;
 
         if (instrument != null) addedColumnsCount++;
         if (volume != null) addedColumnsCount++;
@@ -61,7 +60,7 @@ public class CsvBarToDbRowConverter implements IConverter<String[], Object[]> {
         int inputCounter = 0;
         int outputCounter = 0;
         if (instrument != null) {
-            enrichedStrings[outputCounter++] = instrument.getId();
+            enrichedStrings[outputCounter++] = instrument.getSymbol();
         }
         else {
             enrichedStrings[outputCounter++] = strings[inputCounter++];
@@ -78,7 +77,7 @@ public class CsvBarToDbRowConverter implements IConverter<String[], Object[]> {
         else {
             enrichedStrings[outputCounter++] = strings[inputCounter];
         }
-        enrichedStrings[outputCounter] = currency.getCode();
+        enrichedStrings[outputCounter] = currencyCode;
 
         return enrichedStrings;
     }
@@ -106,16 +105,16 @@ public class CsvBarToDbRowConverter implements IConverter<String[], Object[]> {
     public static class Builder {
         private Map<String, String> inputToOutputColumnMappings;
         private IDateTimeConverter<String, String> dateTimeConverter;
-        private Instrument instrument;
+        private IInstrument instrument;
         private Long volume;
-        private Currency currency;
+        private String currencyCode;
 
         public Builder(Map<String, String> inputToOutputColumnMappings,
                        IDateTimeConverter<String, String> dateTimeConverter,
-                       Currency currency) {
+                       String currencyCode) {
             this.inputToOutputColumnMappings = inputToOutputColumnMappings;
             this.dateTimeConverter = dateTimeConverter;
-            this.currency = currency;
+            this.currencyCode = currencyCode;
         }
 
         public Builder volume(Long volume) {
@@ -123,7 +122,7 @@ public class CsvBarToDbRowConverter implements IConverter<String[], Object[]> {
             return this;
         }
 
-        public Builder instrument(Instrument instrument) {
+        public Builder instrument(IInstrument instrument) {
             this.instrument = instrument;
             return this;
         }
@@ -133,7 +132,7 @@ public class CsvBarToDbRowConverter implements IConverter<String[], Object[]> {
                                               dateTimeConverter,
                                               instrument,
                                               volume,
-                                              currency);
+                                              currencyCode);
         }
     }
 }
