@@ -1,6 +1,5 @@
 package org.jinvestor.datasource.converter;
 
-import org.jinvestor.datasource.IConverter;
 import org.jinvestor.model.Bar;
 
 /**

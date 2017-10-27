@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.jinvestor.datasource.IConverter;
 import org.jinvestor.model.entity.EntityMetaDataFactory;
 import org.jinvestor.model.entity.IEntityMetaData;
 

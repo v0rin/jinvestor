@@ -1,4 +1,4 @@
-package org.jinvestor.datasource;
+package org.jinvestor.datasource.converter;
 
 import java.util.function.Function;
 

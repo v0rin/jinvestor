@@ -6,7 +6,6 @@ import static org.junit.Assert.assertThat;
 import java.sql.Timestamp;
 import java.time.Instant;
 
-import org.jinvestor.datasource.IConverter;
 import org.jinvestor.model.Bar;
 import org.jinvestor.model.Instruments;
 import org.jinvestor.model.entity.EntityMetaDataFactory;

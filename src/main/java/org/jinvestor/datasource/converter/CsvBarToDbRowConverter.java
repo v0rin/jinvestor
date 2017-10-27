@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.jinvestor.datasource.IConverter;
 import org.jinvestor.model.Bar;
 import org.jinvestor.model.IInstrument;
 import org.jinvestor.model.entity.EntityMetaDataFactory;

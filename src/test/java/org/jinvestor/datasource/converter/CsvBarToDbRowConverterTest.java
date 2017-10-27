@@ -9,8 +9,7 @@ import static org.junit.Assert.assertThat;
 import java.sql.Timestamp;
 import java.time.Instant;
 
-import org.jinvestor.datasource.IConverter;
-import org.jinvestor.datasource.Yahoo;
+import org.jinvestor.dataprovider.Yahoo;
 import org.jinvestor.model.IInstrument;
 import org.jinvestor.model.Instrument;
 import org.jinvestor.time.DateTimeConverterFactory;

@@ -1,4 +1,4 @@
-package org.jinvestor.datasource;
+package org.jinvestor.etl;
 
 import java.io.IOException;
 

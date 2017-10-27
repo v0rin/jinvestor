@@ -1,6 +1,11 @@
-package org.jinvestor.datasource;
+package org.jinvestor.etl;
 
+import org.jinvestor.dataprovider.Stooq;
+import org.jinvestor.dataprovider.Yahoo;
+import org.jinvestor.datasource.IReader;
+import org.jinvestor.datasource.IWriter;
 import org.jinvestor.datasource.converter.CsvBarToDbRowConverter;
+import org.jinvestor.datasource.converter.IConverter;
 import org.jinvestor.datasource.db.FastRawDbWriter;
 import org.jinvestor.datasource.file.CsvReader;
 import org.jinvestor.model.Bar;

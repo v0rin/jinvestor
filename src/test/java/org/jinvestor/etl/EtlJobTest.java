@@ -1,4 +1,4 @@
-package org.jinvestor.datasource;
+package org.jinvestor.etl;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
@@ -10,6 +10,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
+import org.jinvestor.datasource.IReader;
+import org.jinvestor.datasource.IWriter;
+import org.jinvestor.datasource.converter.IConverter;
 import org.jinvestor.datasource.file.CsvReader;
 import org.jinvestor.datasource.file.SimpleFileWriter;
 import org.junit.After;

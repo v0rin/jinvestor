@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jinvestor.datasource.IConverter;
 import org.jinvestor.datasource.SqlUtil;
 import org.jinvestor.exception.AppRuntimeException;
 import org.jinvestor.model.Bar;

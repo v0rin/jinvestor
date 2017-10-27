@@ -1,7 +1,11 @@
-package org.jinvestor.datasource;
+package org.jinvestor.etl;
 
 import java.io.IOException;
 import java.util.Objects;
+
+import org.jinvestor.datasource.IReader;
+import org.jinvestor.datasource.IWriter;
+import org.jinvestor.datasource.converter.IConverter;
 
 /**
  * A typical ETL (Extract-Transform-Load) Job
