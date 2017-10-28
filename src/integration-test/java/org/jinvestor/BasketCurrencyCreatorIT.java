@@ -7,7 +7,6 @@ import static org.jinvestor.model.Instruments.GBP;
 import static org.jinvestor.model.Instruments.JPY;
 import static org.jinvestor.model.Instruments.USD;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.DayOfWeek;
 import java.time.Instant;
@@ -27,6 +26,7 @@ import org.jinvestor.configuration.StaticJavaConfiguration;
 import org.jinvestor.model.Bar;
 import org.jinvestor.model.IInstrument;
 import org.jinvestor.model.Instrument;
+import org.jinvestor.timeseriesfeed.ITimeSeriesFeed;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,7 +41,7 @@ public class BasketCurrencyCreatorIT {
 
 
     @Test
-    public void testFxDates() throws IOException {
+    public void testFxDates() throws Exception {
         //#### CONFIGURATION #####
         Instant from = Instant.parse("1971-01-04T23:59:59.999Z");
         Instant to = Instant.parse("2020-01-15T23:59:59.999Z");
@@ -50,7 +50,8 @@ public class BasketCurrencyCreatorIT {
         //########################
 
         IInstrument instrument = new Instrument(currency, refCurrency);
-        Iterator<Bar> barIter = instrument.streamDaily(from, to).iterator();
+        ITimeSeriesFeed<Bar> barFeed = instrument.getBarDailyFeed();
+        Iterator<Bar> barIter = barFeed.stream(from, to).iterator();
 
         long daysBetween = ChronoUnit.DAYS.between(from, to);
         Timestamp timestamp = barIter.next().getTimestamp();
@@ -72,6 +73,7 @@ public class BasketCurrencyCreatorIT {
             }
             timestamp = barIter.next().getTimestamp();
         }
+        barFeed.close();
     }
 
     @Test

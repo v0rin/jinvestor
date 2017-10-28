@@ -117,7 +117,7 @@ public class BasketCurrencyCreator implements IBasketCurrencyCreator {
             try {
                 Iterator<Bar> barIterator = null;
                 if (!currency.equals(REF_CURRENCY_CODE)) {
-                    barIterator = currency.streamDaily(from, to).iterator();
+                    barIterator = currency.getBarDailyFeed().stream(from, to).iterator();
                 }
                 // puts a null key if currency is REF_CURRENCY
                 iteratorMap.put(barIterator, weight);

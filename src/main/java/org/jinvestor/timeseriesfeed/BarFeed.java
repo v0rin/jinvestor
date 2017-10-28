@@ -21,7 +21,7 @@ import com.alexfu.sqlitequerybuilder.api.SQLiteQueryBuilder;
  *
  * @author Adam
  */
-public class BarFeed implements ITimeSeriesFeed<Bar>, AutoCloseable {
+public class BarFeed implements ITimeSeriesFeed<Bar> {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatterFactory.standardTimestamp();
 
@@ -40,7 +40,7 @@ public class BarFeed implements ITimeSeriesFeed<Bar>, AutoCloseable {
 
 
     @Override
-    public Stream<Bar> get(Instant from, Instant to) throws IOException {
+    public Stream<Bar> stream(Instant from, Instant to) throws IOException {
         String selectQuery = SQLiteQueryBuilder
                 .select("*")
                 .from(EntityMetaDataFactory.get(Bar.class).getTableName())

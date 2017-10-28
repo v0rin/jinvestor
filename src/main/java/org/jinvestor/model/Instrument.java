@@ -1,14 +1,14 @@
 package org.jinvestor.model;
 
-import java.io.IOException;
-import java.time.Instant;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jinvestor.timeseriesfeed.BarFeed;
+import org.jinvestor.timeseriesfeed.ITimeSeriesFeed;
 import org.jinvestor.timeseriesfeed.TimeSeriesFreq;
 
 /**
@@ -21,22 +21,25 @@ public class Instrument implements IInstrument {
     private String currencyCode;
     private String description;
 
+    private Map<TimeSeriesFreq, ITimeSeriesFeed<Bar>> barFeeds;
+
     public Instrument(String symbol, String currencyCode) {
         this.symbol = symbol;
         this.aliases = new ArrayList<>();
         this.aliases.add(symbol);
         this.currencyCode = currencyCode;
         this.description = symbol;
+        barFeeds = new EnumMap<>(TimeSeriesFreq.class);
     }
 
     @Override
-    public Stream<Bar> streamDaily(Instant from, Instant to) throws IOException {
-        return stream(from, to, TimeSeriesFreq.DAILY);
+    public ITimeSeriesFeed<Bar> getBarDailyFeed() {
+        return getBarFeed(TimeSeriesFreq.DAILY);
     }
 
     @Override
-    public Stream<Bar> stream(Instant from, Instant to, TimeSeriesFreq frequency) throws IOException {
-        return new BarFeed(frequency, this).get(from, to);
+    public ITimeSeriesFeed<Bar> getBarFeed(TimeSeriesFreq frequency) {
+        return barFeeds.computeIfAbsent(frequency, freq -> new BarFeed(freq, this));
     }
 
     @Override

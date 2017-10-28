@@ -32,6 +32,7 @@ import org.jinvestor.model.entity.EntityMetaDataFactory;
 import org.jinvestor.model.entity.IEntityMetaData;
 import org.jinvestor.time.DateTimeConverterFactory;
 import org.jinvestor.time.IDateTimeConverter;
+import org.jinvestor.timeseriesfeed.ITimeSeriesFeed;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,6 +57,7 @@ public class CsvToSqliteTest {
     private static final Instant TO_FOREVER = Instant.parse("9999-01-01T23:59:59.999Z");
 
     private IEntityMetaData<Bar> barEntityMetaData = EntityMetaDataFactory.get(Bar.class);
+    private ITimeSeriesFeed<Bar> barFeed;
 
 
     @Before
@@ -68,12 +70,15 @@ public class CsvToSqliteTest {
         try (Connection connection = DriverManager.getConnection(DB_CONNECTION_STRING)) {
             connection.prepareStatement(barEntityMetaData.getCreateTableSql()).executeUpdate();
         }
+
+        barFeed = new Instrument(SYMBOL, CURRENCY_CODE).getBarDailyFeed();
     }
 
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Exception {
         new File(DB_PATH).delete();
+        barFeed.close();
     }
 
 
@@ -109,8 +114,7 @@ public class CsvToSqliteTest {
         etlJob.execute();
 
         // then
-        List<Bar> actual = new Instrument(SYMBOL, CURRENCY_CODE)
-                                .streamDaily(FROM_FOREVER, TO_FOREVER).collect(Collectors.toList());
+        List<Bar> actual = barFeed.stream(FROM_FOREVER, TO_FOREVER).collect(Collectors.toList());
         assertThat(actual, is(expected));
     }
 }

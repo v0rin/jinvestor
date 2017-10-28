@@ -8,8 +8,8 @@ import java.util.stream.Stream;
  *
  * @author Adam
  */
-public interface ITimeSeriesFeed<T> {
+public interface ITimeSeriesFeed<T> extends AutoCloseable {
 
-    Stream<T> get(Instant from, Instant to) throws IOException;
+    Stream<T> stream(Instant from, Instant to) throws IOException;
 
 }
