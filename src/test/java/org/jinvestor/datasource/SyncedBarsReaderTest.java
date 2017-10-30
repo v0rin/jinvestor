@@ -9,8 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,14 +16,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jinvestor.ConfKeys;
 import org.jinvestor.configuration.Configuration;
 import org.jinvestor.configuration.StaticJavaConfiguration;
 import org.jinvestor.model.Bar;
 import org.jinvestor.model.IInstrument;
 import org.jinvestor.model.Instrument;
+import org.jinvestor.time.TimestampUtil;
 import org.jinvestor.timeseriesfeed.ITimeSeriesFeed;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,8 +38,6 @@ import junitparams.Parameters;
 
 @RunWith(JUnitParamsRunner.class)
 public class SyncedBarsReaderTest {
-
-    private static final Logger LOG = LogManager.getLogger(SyncedBarsReaderTest.class);
 
     private static final Instant FROM = Instant.parse("2000-01-01T23:59:59.999Z");
     private static final Instant TO = Instant.parse("2000-01-06T23:59:59.999Z");
@@ -70,18 +65,18 @@ public class SyncedBarsReaderTest {
     @SuppressWarnings("checkstyle:magicnumber")
     protected Object[] inputBarStream() {
         return new Object[] {
-            new Object[]{streamWithBarsWithDayOffsets(0, 1, 2, 3, 4, 5), arrayWithBars(0, 1, 2, 3, 4, 5)},
-            new Object[]{streamWithBarsWithDayOffsets(0, 1, 2, 3), arrayWithBars(0, 1, 2, 3, null, null)},
-            new Object[]{streamWithBarsWithDayOffsets(3, 4, 5), arrayWithBars(null, null, null, 3, 4, 5)},
-            new Object[]{streamWithBarsWithDayOffsets(0, 2, 4), arrayWithBars(0, null, 2, null, 4, null)},
-            new Object[]{streamWithBarsWithDayOffsets(1, 3, 5), arrayWithBars(null, 1, null, 3, null, 5)},
-            new Object[]{streamWithBarsWithDayOffsets(0, 5), arrayWithBars(0, null, null, null, null, 5)},
-            new Object[]{streamWithBarsWithDayOffsets(2, 5), arrayWithBars(null, null, 2, null, null, 5)},
-            new Object[]{streamWithBarsWithDayOffsets(0, 3), arrayWithBars(0, null, null, 3, null, null)},
-            new Object[]{streamWithBarsWithDayOffsets(0), arrayWithBars(0, null, null, null, null, null)},
-            new Object[]{streamWithBarsWithDayOffsets(5), arrayWithBars(null, null, null, null, null, 5)},
-            new Object[]{streamWithBarsWithDayOffsets(2), arrayWithBars(null, null, 2, null, null, null)},
-            new Object[]{streamWithBarsWithDayOffsets(2, 3), arrayWithBars(null, null, 2, 3, null, null)}
+            new Object[]{barStreamWithDayOffsets(0, 1, 2, 3, 4, 5), barArray(0, 1, 2, 3, 4, 5)},
+            new Object[]{barStreamWithDayOffsets(0, 1, 2, 3), barArray(0, 1, 2, 3, null, null)},
+            new Object[]{barStreamWithDayOffsets(3, 4, 5), barArray(null, null, null, 3, 4, 5)},
+            new Object[]{barStreamWithDayOffsets(0, 2, 4), barArray(0, null, 2, null, 4, null)},
+            new Object[]{barStreamWithDayOffsets(1, 3, 5), barArray(null, 1, null, 3, null, 5)},
+            new Object[]{barStreamWithDayOffsets(0, 5), barArray(0, null, null, null, null, 5)},
+            new Object[]{barStreamWithDayOffsets(2, 5), barArray(null, null, 2, null, null, 5)},
+            new Object[]{barStreamWithDayOffsets(0, 3), barArray(0, null, null, 3, null, null)},
+            new Object[]{barStreamWithDayOffsets(0), barArray(0, null, null, null, null, null)},
+            new Object[]{barStreamWithDayOffsets(5), barArray(null, null, null, null, null, 5)},
+            new Object[]{barStreamWithDayOffsets(2), barArray(null, null, 2, null, null, null)},
+            new Object[]{barStreamWithDayOffsets(2, 3), barArray(null, null, 2, 3, null, null)}
         };
     }
 
@@ -101,14 +96,14 @@ public class SyncedBarsReaderTest {
         assertThat(actual, is(expected));
     }
 
-    private List<List<TestBar>> arrayWithBars(Integer... dayOffsets) {
+    private List<List<TestBar>> barArray(Integer... dayOffsets) {
         return Arrays.stream(dayOffsets).map(dayOffset -> {
             if (dayOffset == null) return new ArrayList<TestBar>();
             else return Arrays.asList(new TestBar(dayOffset));
         }).collect(Collectors.toList());
     }
 
-    private Stream<Bar> streamWithBarsWithDayOffsets(int... dayOffsets) {
+    private Stream<Bar> barStreamWithDayOffsets(int... dayOffsets) {
         return Arrays.stream(dayOffsets).boxed().map(TestBar::new);
     }
 
@@ -122,7 +117,7 @@ public class SyncedBarsReaderTest {
 
         private static Timestamp getAdjustedTimestamp(int dayOffset) {
             Instant fromShifted = FROM.plus(dayOffset, ChronoUnit.DAYS);
-            Timestamp timestamp = Timestamp.valueOf(LocalDateTime.ofInstant(fromShifted, ZoneOffset.UTC));
+            Timestamp timestamp = TimestampUtil.fromInstantInUTC(fromShifted);
             return timestamp;
         }
 

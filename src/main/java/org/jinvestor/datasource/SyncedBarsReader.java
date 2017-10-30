@@ -22,11 +22,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Retrieves bars for multiple instruments and combines them into a stream of bar lists,
- * where bars are matched to the reference instrument e.g.
- * <li>if for a given timestamp a bar for the reference instrument exists and another instrument's bar
- * also exists then they are emitted together
- * <li>if for a given timestamp a bar for the reference instrument exists and another instrument's bar
- * doesn't then he reference instrument's bar is emitted along with the previous existing another instrument's bar
+ * where bars places on continues timestamp stream
  * <br><br>
  *
  * @author Adam
@@ -38,6 +34,7 @@ public class SyncedBarsReader implements IReader<List<Bar>> {
     private List<IInstrument> instruments;
     private Instant from;
     private Instant to;
+
 
     public SyncedBarsReader(List<IInstrument> instruments, Instant from, Instant to) {
         this.instruments = instruments;
@@ -63,7 +60,7 @@ public class SyncedBarsReader implements IReader<List<Bar>> {
             iterators.forEach(barIter -> {
                 Bar bar = lastRetrievedBars.get(barIter);
                 while ((bar == null || bar.getTimestamp().before(timestamp)) && barIter.hasNext()) {
-                    // bar needs to catch up to refBar
+                    // bar needs to catch up to the timestamp
                     bar = barIter.next();
                     // TODO (AF) can be removed in the future, after the algorithm is fully tested
                     checkBarTimestampIsEod(bar);
@@ -75,8 +72,6 @@ public class SyncedBarsReader implements IReader<List<Bar>> {
 
                 lastRetrievedBars.put(barIter, bar);
                 if (bar.getTimestamp().equals(timestamp)) {
-                    // TODO (AF) can be removed in the future, after the algorithm is fully tested
-                    checkState(!bar.getTimestamp().after(timestamp), "Bar's timestamp is after refBar's timestamp!");
                     bars.add(bar);
                     lastRetrievedBars.put(barIter, bar);
                     return;

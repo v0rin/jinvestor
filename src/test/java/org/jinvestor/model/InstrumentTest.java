@@ -22,4 +22,18 @@ public class InstrumentTest {
         // then
         assertThat(actualBarFeedInstanceFeed, is(expectedBarFeedInstance));
     }
+
+    @Test
+    public void instrumentsShouldBeEqual() {
+        // given
+        Instrument instrument1 = new Instrument(SPY, USD);
+        Instrument instrument2 = new Instrument(SPY, USD);
+
+        // when
+        instrument1.getBarDailyFeed();
+        instrument2.getBarDailyFeed();
+
+        // then
+        assertThat(instrument1, is(instrument2));
+    }
 }

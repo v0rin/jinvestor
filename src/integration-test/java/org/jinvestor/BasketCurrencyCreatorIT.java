@@ -1,6 +1,5 @@
 package org.jinvestor;
 
-import static org.jinvestor.model.Instruments.BC1;
 import static org.jinvestor.model.Instruments.CNY;
 import static org.jinvestor.model.Instruments.EUR;
 import static org.jinvestor.model.Instruments.GBP;
@@ -108,11 +107,11 @@ public class BasketCurrencyCreatorIT {
         basketComposition.put(new Instrument(GBP, refCurrencyCode), 0.1d);
         //########################
 
-        IBasketCurrencyCreator creator = new BasketCurrencyCreator(new Instrument(BC1, USD), basketComposition);
+//        IBasketCurrencyCreator creator = new BasketCurrencyCreator(new Instrument(BC1, USD), basketComposition);
 
-        Stream<Bar> currencyBasketBars = creator.create(from, to);
+//        Stream<Bar> currencyBasketBars = creator.create(from, to);
 
-        currencyBasketBars.forEach(LOG::info);
+//        currencyBasketBars.forEach(LOG::info);
         // TODO (AF) check if the instrument exists in db and ask if use wants to continue
         // should it be in DbWriter or on some higher level? like here
 //        String dbConnectionString = Configuration.INSTANCE.getString(ConfKeys.BAR_DAILY_DB_CONNECTION_STRING);
