@@ -23,5 +23,6 @@ public class LoggerWriter implements IWriter<Bar> {
 
     @Override
     public void close() throws Exception {
+        // intentionally left empty
     }
 }

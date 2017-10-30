@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jinvestor.exception.AppRuntimeException;
 import org.jinvestor.model.Bar;
 import org.jinvestor.model.IInstrument;
@@ -28,8 +26,6 @@ import static com.google.common.base.Preconditions.checkState;
  * @author Adam
  */
 public class SyncedBarsReader implements IReader<List<Bar>> {
-
-    private static final Logger LOG = LogManager.getLogger();
 
     private List<IInstrument> instruments;
     private Instant from;

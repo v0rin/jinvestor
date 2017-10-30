@@ -2,6 +2,8 @@ package org.jinvestor.configuration;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
 *
 * @author Adam
@@ -12,6 +14,7 @@ public enum Configuration implements IConfiguration {
 
     private IConfiguration conf;
 
+    @SuppressFBWarnings(value="ME_ENUM_FIELD_SETTER")
     public void initialize(IConfiguration configuration) {
         this.conf = configuration;
     }

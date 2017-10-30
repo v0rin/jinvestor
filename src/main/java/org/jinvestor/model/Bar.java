@@ -8,8 +8,6 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 /**
 *
 * @author Adam
@@ -57,7 +55,9 @@ public class Bar {
                Long volume,
                String currencyCode) {
         this.symbol = symbol;
-        this.timestamp = timestamp;
+        if (timestamp != null) {
+            this.timestamp = new Timestamp(timestamp.getTime());
+        }
         this.open = open;
         this.high = high;
         this.low = low;
@@ -79,9 +79,10 @@ public class Bar {
         return new Timestamp(timestamp.getTime());
     }
 
-    @SuppressFBWarnings(value="EI_EXPOSE_REP2")
     public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
+        if (timestamp != null) {
+            this.timestamp = new Timestamp(timestamp.getTime());
+        }
     }
 
     public Double getOpen() {
