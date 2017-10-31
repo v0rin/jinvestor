@@ -3,15 +3,12 @@ package org.jinvestor.datasource.converter;
 import static org.hamcrest.CoreMatchers.is;
 import static org.jinvestor.model.Instruments.EUR;
 import static org.jinvestor.model.Instruments.SPY;
-import static org.jinvestor.model.Instruments.USD;
 import static org.junit.Assert.assertThat;
 
 import java.sql.Timestamp;
 import java.time.Instant;
 
 import org.jinvestor.dataprovider.Yahoo;
-import org.jinvestor.model.IInstrument;
-import org.jinvestor.model.Instrument;
 import org.jinvestor.time.DateTimeConverterFactory;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,12 +23,12 @@ public class CsvBarToDbRowConverterTest {
     private static final String CLOSE_COL = "Close";
     private static final String VOLUME_COL = "Volume";
 
-    private static final IInstrument INSTRUMENT = new Instrument(SPY, USD);
+    private static final String SYMBOL = SPY;
     private static final String CURRENCY_CODE = EUR;
 
     private static final String DATE = "2017-01-01";
     private static final Object[] EXPECTED = new Object[] {
-        INSTRUMENT.getSymbol(),
+        SYMBOL,
         Timestamp.from(Instant.parse(DATE + "T23:59:59.999Z")).toString(),
         "1", "2", "3", "4", "100",
         CURRENCY_CODE};
@@ -55,7 +52,7 @@ public class CsvBarToDbRowConverterTest {
         String[] csvColumns = new String[] {
             INSTRUMENT_COL, DATE_COL, OPEN_COL, HIGH_COL, LOW_COL, CLOSE_COL, VOLUME_COL};
         int id = 2;
-        String[] csvRow = new String[] {INSTRUMENT.getSymbol(),
+        String[] csvRow = new String[] {SYMBOL,
                                         DATE,
                                         (String)EXPECTED[id++],
                                         (String)EXPECTED[id++],
@@ -88,7 +85,7 @@ public class CsvBarToDbRowConverterTest {
                                         (String)EXPECTED[id]};
 
         IConverter<String[], Object[]> converter = converterBuilder
-                .instrument(INSTRUMENT)
+                .symbol(SYMBOL)
                 .build();
 
         // when
@@ -107,7 +104,7 @@ public class CsvBarToDbRowConverterTest {
         String[] csvColumns = new String[] {
             INSTRUMENT_COL, DATE_COL, OPEN_COL, HIGH_COL, LOW_COL, CLOSE_COL};
         int id = 2;
-        String[] csvRow = new String[] {INSTRUMENT.getSymbol(),
+        String[] csvRow = new String[] {SYMBOL,
                                         DATE,
                                         (String)EXPECTED[id++],
                                         (String)EXPECTED[id++],
@@ -142,7 +139,7 @@ public class CsvBarToDbRowConverterTest {
 
         IConverter<String[], Object[]> converter = converterBuilder
                 .volume(100L)
-                .instrument(INSTRUMENT)
+                .symbol(SYMBOL)
                 .build();
 
         // when

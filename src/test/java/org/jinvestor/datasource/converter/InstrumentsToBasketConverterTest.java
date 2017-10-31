@@ -18,9 +18,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jinvestor.ConfKeys;
-import org.jinvestor.configuration.Configuration;
-import org.jinvestor.configuration.StaticJavaConfiguration;
 import org.jinvestor.datasource.IReader;
 import org.jinvestor.datasource.SyncedBarsReader;
 import org.jinvestor.model.Bar;
@@ -80,8 +77,6 @@ public class InstrumentsToBasketConverterTest {
 
     @Before
     public void setUp() throws IOException {
-        Configuration.initialize(new StaticJavaConfiguration<>(ConfKeys.class));
-
         instruments = new ArrayList<>();
         instruments.add(new TestInstrument(SYM1, REF_CURRENCY, testBarFeed1));
         instruments.add(new TestInstrument(SYM2, REF_CURRENCY, testBarFeed2));

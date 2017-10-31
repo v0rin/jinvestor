@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.jinvestor.model.Bar;
-import org.jinvestor.model.IInstrument;
 import org.jinvestor.model.entity.EntityMetaDataFactory;
 import org.jinvestor.model.entity.IEntityMetaData;
 import org.jinvestor.time.IDateTimeConverter;
@@ -20,7 +19,7 @@ public class CsvBarToDbRowConverter implements IConverter<String[], Object[]> {
 
     private Map<String, String> inputToOutputColumnMappings;
     private IDateTimeConverter<String, String> dateTimeConverter;
-    private IInstrument instrument;
+    private String symbol;
     private Long volume;
     private String currencyCode;
 
@@ -31,17 +30,17 @@ public class CsvBarToDbRowConverter implements IConverter<String[], Object[]> {
 
     private CsvBarToDbRowConverter(Map<String, String> inputToOutputColumnMappings,
                                    IDateTimeConverter<String, String> dateTimeConverter,
-                                   IInstrument instrument,
+                                   String symbol,
                                    Long volume,
                                    String currencyCode) {
         this.inputToOutputColumnMappings = inputToOutputColumnMappings;
         this.entityMetaData = EntityMetaDataFactory.get(Bar.class);
         this.dateTimeConverter = dateTimeConverter;
-        this.instrument = instrument;
+        this.symbol = symbol;
         this.volume = volume;
         this.currencyCode = currencyCode;
 
-        if (instrument != null) addedColumnsCount++;
+        if (symbol != null) addedColumnsCount++;
         if (volume != null) addedColumnsCount++;
         // always add one for currency
         addedColumnsCount++;
@@ -58,8 +57,8 @@ public class CsvBarToDbRowConverter implements IConverter<String[], Object[]> {
         String[] enrichedStrings = new String[strings.length + addedColumnsCount];
         int inputCounter = 0;
         int outputCounter = 0;
-        if (instrument != null) {
-            enrichedStrings[outputCounter++] = instrument.getSymbol();
+        if (symbol != null) {
+            enrichedStrings[outputCounter++] = symbol;
         }
         else {
             enrichedStrings[outputCounter++] = strings[inputCounter++];
@@ -104,7 +103,7 @@ public class CsvBarToDbRowConverter implements IConverter<String[], Object[]> {
     public static class Builder {
         private Map<String, String> inputToOutputColumnMappings;
         private IDateTimeConverter<String, String> dateTimeConverter;
-        private IInstrument instrument;
+        private String symbol;
         private Long volume;
         private String currencyCode;
 
@@ -121,15 +120,15 @@ public class CsvBarToDbRowConverter implements IConverter<String[], Object[]> {
             return this;
         }
 
-        public Builder instrument(IInstrument instrument) {
-            this.instrument = instrument;
+        public Builder symbol(String symbol) {
+            this.symbol = symbol;
             return this;
         }
 
         public CsvBarToDbRowConverter build() {
             return new CsvBarToDbRowConverter(inputToOutputColumnMappings,
                                               dateTimeConverter,
-                                              instrument,
+                                              symbol,
                                               volume,
                                               currencyCode);
         }

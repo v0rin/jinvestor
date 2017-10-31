@@ -16,9 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jinvestor.ConfKeys;
-import org.jinvestor.configuration.Configuration;
-import org.jinvestor.configuration.StaticJavaConfiguration;
 import org.jinvestor.model.Bar;
 import org.jinvestor.model.IInstrument;
 import org.jinvestor.model.Instrument;
@@ -56,8 +53,6 @@ public class SyncedBarsReaderTest {
 
     @Before
     public void setUp() throws IOException {
-        Configuration.initialize(new StaticJavaConfiguration<>(ConfKeys.class));
-
         instruments = new ArrayList<>();
         instruments.add(new TestInstrument(SYMBOL, REF_CURRENCY, testBarFeed));
     }
