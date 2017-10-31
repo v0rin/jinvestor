@@ -100,6 +100,7 @@ public class FastRawDbWriter implements IWriter<Object[]> {
 
 
     @Override
+    @SuppressWarnings("squid:S1905")
     public void write(Stream<Object[]> incomingStream) throws IOException {
         this.buffer = new ArrayList<>();
         try {

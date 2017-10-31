@@ -19,6 +19,7 @@ public class YesNoCommandPrompt<T> {
         this.noAction = noAction;
     }
 
+    @SuppressWarnings("squid:S106")
     public T run() {
         final String yesOption = "y";
         final String noOption = "n";

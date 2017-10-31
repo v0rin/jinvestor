@@ -153,6 +153,7 @@ public final class SqlJool {
             this.exceptionTranslator = exceptionTranslator;
         }
 
+        @SuppressWarnings("squid:AssignmentInSubExpressionCheck")
         private ResultSet rs() {
             return (rs == null) ? (rs = supplier.get()) : rs;
         }
