@@ -11,7 +11,7 @@ public class StaticJavaConfigurationTest {
     @Test
     public void shouldInitializeCorrectly() {
         // given
-        IConfiguration conf = new TestStaticJavaConfiguration(ConfKeys.class);
+        IConfiguration<ConfKeys> conf = new TestStaticJavaConfiguration(ConfKeys.class);
         String expected = TestStaticJavaConfiguration.BAR_DAILY_DB_CONNECTION_STRING;
 
         // when

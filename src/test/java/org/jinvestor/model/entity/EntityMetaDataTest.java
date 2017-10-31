@@ -117,6 +117,7 @@ public class EntityMetaDataTest {
 
     @Entity
     @Table(name="testentity")
+    @SuppressWarnings("unused")
     private static class TestEntityNoColumnAnnotation {
 
         @Column(name="symbol", columnDefinition="TEXT")

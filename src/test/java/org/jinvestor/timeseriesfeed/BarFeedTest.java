@@ -41,7 +41,7 @@ public class BarFeedTest {
     public void setUp() throws SQLException {
         StaticJavaConfiguration<ConfKeys> testConfiguration = new StaticJavaConfiguration<>(ConfKeys.class);
         testConfiguration.setValue(ConfKeys.BAR_DAILY_DB_CONNECTION_STRING, DB_CONNECTION_STRING);
-        Configuration.INSTANCE.initialize(testConfiguration);
+        Configuration.initialize(testConfiguration);
 
         barFeed = new Instrument(SYMBOL, CURRENCY_CODE).getBarDailyFeed();
     }

@@ -64,7 +64,7 @@ public class CsvToSqliteTest {
     public void setUp() throws SQLException {
         StaticJavaConfiguration<ConfKeys> testConfiguration = new StaticJavaConfiguration<>(ConfKeys.class);
         testConfiguration.setValue(ConfKeys.BAR_DAILY_DB_CONNECTION_STRING, DB_CONNECTION_STRING);
-        Configuration.INSTANCE.initialize(testConfiguration);
+        Configuration.initialize(testConfiguration);
 
         new File(DB_PATH).delete();
         try (Connection connection = DriverManager.getConnection(DB_CONNECTION_STRING)) {

@@ -1,5 +1,7 @@
 package org.jinvestor.configuration;
 
+import org.jinvestor.ConfKeys;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -8,30 +10,30 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 *
 * @author Adam
 */
-public enum Configuration implements IConfiguration {
+public class Configuration {
 
-    INSTANCE;
+    private static IConfiguration<ConfKeys> conf;
 
-    private IConfiguration conf;
-
-    @SuppressFBWarnings(value="ME_ENUM_FIELD_SETTER")
-    public void initialize(IConfiguration configuration) {
-        this.conf = configuration;
+    private Configuration() {
+        // exists only to
     }
 
-    @Override
-    public <T extends Enum<T> & IConfigurationKey> String getString(T key) {
+    @SuppressFBWarnings(value="ME_ENUM_FIELD_SETTER")
+    public static synchronized void initialize(IConfiguration<ConfKeys> configuration) {
+        conf = configuration;
+    }
+
+    public static String getString(ConfKeys key) {
         checkIfInitialized();
         return conf.getString(key);
     }
 
-    @Override
-    public <T extends Enum<T> & IConfigurationKey> Integer getInt(T key) {
+    public static Integer getInt(ConfKeys key) {
         checkIfInitialized();
         return conf.getInt(key);
     }
 
-    private void checkIfInitialized() {
+    private static void checkIfInitialized() {
         checkNotNull(conf, "Configuration not set. Call ConfigurationFactory.INSTANCE.set() method first");
     }
 }

@@ -56,7 +56,7 @@ public class SyncedBarsReaderTest {
 
     @Before
     public void setUp() throws IOException {
-        Configuration.INSTANCE.initialize(new StaticJavaConfiguration<>(ConfKeys.class));
+        Configuration.initialize(new StaticJavaConfiguration<>(ConfKeys.class));
 
         instruments = new ArrayList<>();
         instruments.add(new TestInstrument(SYMBOL, REF_CURRENCY, testBarFeed));

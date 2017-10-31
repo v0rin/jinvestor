@@ -48,7 +48,7 @@ public class Etl {
         executeStooqFxCsvDailyBarsToSqliteEtl();
     }
 
-    private static void executeYahooCsvDailyBarsToSqliteEtl() throws IOException, SQLException {
+    protected static void executeYahooCsvDailyBarsToSqliteEtl() throws IOException, SQLException {
         //#### CONFIGURATION #####
         String csvPath = DATASOURCE_ROOT_PATH + "csv/yahoo.csv";
         String dbPath = STANDARD_DAILY_DB_PATH;
@@ -65,7 +65,7 @@ public class Etl {
         LOG.info("ETL job took " + sw.elapsed(TimeUnit.MILLISECONDS) + "ms");
     }
 
-    private static void executeStooqFxCsvDailyBarsToSqliteEtl() throws IOException, SQLException {
+    protected static void executeStooqFxCsvDailyBarsToSqliteEtl() throws IOException, SQLException {
         //#### CONFIGURATION #####
         String csvPath = DATASOURCE_ROOT_PATH + "csv/cnyusd_daily_stooq.csv";
         String dbPath = STANDARD_DAILY_DB_PATH;

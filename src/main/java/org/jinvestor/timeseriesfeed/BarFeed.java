@@ -60,7 +60,7 @@ public class BarFeed implements ITimeSeriesFeed<Bar> {
 
     private String getConnectionString(TimeSeriesFreq barFrequency) {
         if (barFrequency == TimeSeriesFreq.DAILY) {
-            return Configuration.INSTANCE.getString(ConfKeys.BAR_DAILY_DB_CONNECTION_STRING);
+            return Configuration.getString(ConfKeys.BAR_DAILY_DB_CONNECTION_STRING);
         }
         else {
             throw new UnsupportedOperationException("TimeSeriesFreq." + barFrequency.name() + "is not supported");

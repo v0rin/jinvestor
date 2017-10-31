@@ -10,9 +10,12 @@ import org.jinvestor.exception.AppRuntimeException;
 *
 * @author Adam
 */
-public class StaticJavaConfiguration<T extends Enum<T> & IConfigurationKey> implements IConfiguration {
+public class StaticJavaConfiguration<T extends Enum<T> & IConfigurationKey> implements IConfiguration<T> {
 
     protected static final String BAR_DAILY_DB_CONNECTION_STRING = "jdbc:sqlite:datasource/sqlite/bar_daily.sqlite";
+
+
+    // ##################################################################################################### //
 
     private Map<T, String> values;
     private Class<T> type;
@@ -51,12 +54,12 @@ public class StaticJavaConfiguration<T extends Enum<T> & IConfigurationKey> impl
     }
 
     @Override
-    public <T extends Enum<T> & IConfigurationKey> String getString(T key) {
+    public String getString(T key) {
         return values.get(key);
     }
 
     @Override
-    public <T extends Enum<T> & IConfigurationKey> Integer getInt(T key) {
+    public Integer getInt(T key) {
         return Integer.parseInt(values.get(key));
     }
 
