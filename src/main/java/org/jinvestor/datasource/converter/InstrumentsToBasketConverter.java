@@ -46,7 +46,7 @@ public class InstrumentsToBasketConverter implements IConverter<List<Bar>, Bar> 
                                                   .filter(e -> e.getKey() != refCurrency)
                                                   .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        this.instrumentCountThreshold = (double)this.basketComposition.size() / INSTRUMENT_COUNT_THRESHOLD_RATIO;
+        this.instrumentCountThreshold = (double)this.basketComposition.size() * INSTRUMENT_COUNT_THRESHOLD_RATIO;
         this.lastBars = new HashMap<>();
     }
 
