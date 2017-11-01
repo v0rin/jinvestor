@@ -23,6 +23,8 @@ public class InstrumentsToBasketConverter implements IConverter<List<Bar>, Bar> 
 
     private static final int DEFAULT_BAR_NOT_PRESENT_FOR_N_DAYS_WARNING_THRESHOLD = 7;
 
+    private static final double INSTRUMENT_COUNT_THRESHOLD_RATIO = 0.5;
+
     private String basketName;
     private Map<String, Double> basketComposition;
     private Map<String, Bar> lastBars;
@@ -44,7 +46,7 @@ public class InstrumentsToBasketConverter implements IConverter<List<Bar>, Bar> 
                                                   .filter(e -> e.getKey() != refCurrency)
                                                   .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        this.instrumentCountThreshold = (double)this.basketComposition.size() / 2;
+        this.instrumentCountThreshold = (double)this.basketComposition.size() / INSTRUMENT_COUNT_THRESHOLD_RATIO;
         this.lastBars = new HashMap<>();
     }
 
