@@ -29,17 +29,29 @@ public class BarFeedInBasketCurrency implements ITimeSeriesFeed<Bar> {
     private IConverter<List<Bar>, Bar> basketConverter;
     private IReader<List<Bar>> syncedBarsReader;
     private ITimeSeriesFeed<Bar> barFeed;
+    private ITimeSeriesFeed<Bar> proxyCurrencyBarFeed;
+
+    public BarFeedInBasketCurrency(TimeSeriesFreq frequency,
+                                   IInstrument instrument,
+                                   String basketCurrencyName,
+                                   Map<String, Double> basketComposition,
+                                   String proxyCurrency) {
+        this.basketComposition = basketComposition;
+        this.refCurrency = instrument.getCurrencyCode();
+        this.basketConverter = new InstrumentsToBasketConverter(basketCurrencyName, refCurrency, basketComposition);
+        this.barFeed = new BarFeed(frequency, instrument);
+        if (proxyCurrency != null) {
+            IInstrument proxyInstrument = new Instrument(refCurrency, proxyCurrency);
+            this.proxyCurrencyBarFeed = new BarFeed(frequency, proxyInstrument);
+        }
+    }
 
 
     public BarFeedInBasketCurrency(TimeSeriesFreq frequency,
                                  IInstrument instrument,
                                  String basketCurrencyName,
                                  Map<String, Double> basketComposition) {
-        this.basketComposition = basketComposition;
-        this.refCurrency = instrument.getCurrencyCode();
-        this.basketConverter = new InstrumentsToBasketConverter(basketCurrencyName, refCurrency, basketComposition);
-        this.barFeed = new BarFeed(frequency, instrument);
-
+        this(frequency, instrument, basketCurrencyName, basketComposition, null);
     }
 
 
@@ -53,7 +65,17 @@ public class BarFeedInBasketCurrency implements ITimeSeriesFeed<Bar> {
 
         IConverter<Bar, Bar> instrumentCurrencyConverter = new InstrumentCurrencyConverter(basketCurrencyStream);
 
-        return barFeed.stream(from, to).map(instrumentCurrencyConverter);
+        if (proxyCurrencyBarFeed == null) {
+            // spy/usd * usd/bc1 -> spy/bc1
+            return barFeed.stream(from, to).map(instrumentCurrencyConverter);
+        }
+        else {
+            // wig/pln * pln/usd -> wig/usd * usd/bc1 -> wig/bc1
+            Stream<Bar> proxyCurrencyStream = proxyCurrencyBarFeed.stream(from, to);
+            IConverter<Bar, Bar> proxyCurrencyConverter = new InstrumentCurrencyConverter(proxyCurrencyStream);
+            return barFeed.stream(from, to).map(proxyCurrencyConverter)
+                                           .map(instrumentCurrencyConverter);
+        }
     }
 
 
@@ -69,5 +91,6 @@ public class BarFeedInBasketCurrency implements ITimeSeriesFeed<Bar> {
     public void close() throws Exception {
         syncedBarsReader.close();
         barFeed.close();
+        if (proxyCurrencyBarFeed != null) proxyCurrencyBarFeed.close();
     }
 }

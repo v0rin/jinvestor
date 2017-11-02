@@ -25,9 +25,23 @@ public interface IInstrument {
     ITimeSeriesFeed<Bar> getBarFeed(TimeSeriesFreq frequency);
 
     ITimeSeriesFeed<Bar> getBarDailyFeedInBasketCurrency(String basketCurrencyName,
-            Map<String, Double> basketComposition);
+                                                         Map<String, Double> basketComposition);
 
-    ITimeSeriesFeed<Bar> getBarFeedInBasketCurrency(TimeSeriesFreq frequency, String basketCurrencyName,
-            Map<String, Double> basketComposition);
+    ITimeSeriesFeed<Bar> getBarFeedInBasketCurrency(TimeSeriesFreq frequency,
+                                                    String basketCurrencyName,
+                                                    Map<String, Double> basketComposition);
 
+    ITimeSeriesFeed<Bar> getBarFeedInBasketCurrency(TimeSeriesFreq frequency,
+                                                    String basketCurrencyName,
+                                                    Map<String, Double> basketComposition,
+                                                    String proxyCurrency);
+
+    ITimeSeriesFeed<Bar> getBarDailyFeedInBasketCurrencyByProxy(String basketCurrencyName,
+                                                                Map<String, Double> basketComposition,
+                                                                String proxyCurrency);
+
+    ITimeSeriesFeed<Bar> getBarFeedInBasketCurrencyByProxy(TimeSeriesFreq frequency,
+                                                           String basketCurrencyName,
+                                                           Map<String, Double> basketComposition,
+                                                           String proxyCurrency);
 }

@@ -54,10 +54,36 @@ public class Instrument implements IInstrument {
 
     @Override
     public ITimeSeriesFeed<Bar> getBarFeedInBasketCurrency(TimeSeriesFreq frequency,
+                                                           String basketCurrencyName,
+                                                           Map<String, Double> basketComposition,
+                                                           String proxyCurrency) {
+        return getBarFeedInBasketCurrencyByProxy(TimeSeriesFreq.DAILY, basketCurrencyName, basketComposition, null);
+    }
+
+    @Override
+    public ITimeSeriesFeed<Bar> getBarFeedInBasketCurrency(TimeSeriesFreq frequency,
                                                          String basketCurrencyName,
                                                          Map<String, Double> basketComposition) {
+        return getBarFeedInBasketCurrencyByProxy(frequency, basketCurrencyName, basketComposition, null);
+    }
+
+    @Override
+    public ITimeSeriesFeed<Bar> getBarDailyFeedInBasketCurrencyByProxy(String basketCurrencyName,
+                                                                       Map<String, Double> basketComposition,
+                                                                       String proxyCurrency) {
+        return getBarFeedInBasketCurrencyByProxy(TimeSeriesFreq.DAILY,
+                                                 basketCurrencyName,
+                                                 basketComposition,
+                                                 proxyCurrency);
+    }
+
+    @Override
+    public ITimeSeriesFeed<Bar> getBarFeedInBasketCurrencyByProxy(TimeSeriesFreq frequency,
+                                                                  String basketCurrencyName,
+                                                                  Map<String, Double> basketComposition,
+                                                                  String proxyCurrency) {
         return basketCurrencyBarFeeds.compute(frequency,
-            (freq, v) -> new BarFeedInBasketCurrency(freq, this, basketCurrencyName, basketComposition));
+            (freq, v) -> new BarFeedInBasketCurrency(freq, this, basketCurrencyName, basketComposition, proxyCurrency));
     }
 
     @Override
