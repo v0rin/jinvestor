@@ -23,7 +23,6 @@ public class Etl {
     }
 
     public static void main(String[] args) throws Exception {
-        executeStooqFxCsvDailyBarsToSqliteEtl();
     }
 
     protected static void executeYahooCsvDailyBarsToSqliteEtl() throws IOException, SQLException {

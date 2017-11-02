@@ -8,10 +8,12 @@ import java.util.Map;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jinvestor.timeseriesfeed.BarFeed;
+import org.jinvestor.timeseriesfeed.BarFeedInBasketCurrency;
 import org.jinvestor.timeseriesfeed.ITimeSeriesFeed;
 import org.jinvestor.timeseriesfeed.TimeSeriesFreq;
 
 /**
+ * TODO (AF) dependency injection would be nice here
  * @author Adam
  */
 public class Instrument implements IInstrument {
@@ -22,6 +24,7 @@ public class Instrument implements IInstrument {
     private String description;
 
     private Map<TimeSeriesFreq, ITimeSeriesFeed<Bar>> barFeeds;
+    private Map<TimeSeriesFreq, ITimeSeriesFeed<Bar>> basketCurrencyBarFeeds;
 
     public Instrument(String symbol, String currencyCode) {
         this.symbol = symbol;
@@ -29,7 +32,8 @@ public class Instrument implements IInstrument {
         this.aliases.add(symbol);
         this.currencyCode = currencyCode;
         this.description = symbol;
-        barFeeds = new EnumMap<>(TimeSeriesFreq.class);
+        this.barFeeds = new EnumMap<>(TimeSeriesFreq.class);
+        this.basketCurrencyBarFeeds = new EnumMap<>(TimeSeriesFreq.class);
     }
 
     @Override
@@ -40,6 +44,20 @@ public class Instrument implements IInstrument {
     @Override
     public ITimeSeriesFeed<Bar> getBarFeed(TimeSeriesFreq frequency) {
         return barFeeds.computeIfAbsent(frequency, freq -> new BarFeed(freq, this));
+    }
+
+    @Override
+    public ITimeSeriesFeed<Bar> getBarDailyFeedInBasketCurrency(String basketCurrencyName,
+                                                              Map<String, Double> basketComposition) {
+        return getBarFeedInBasketCurrency(TimeSeriesFreq.DAILY, basketCurrencyName, basketComposition);
+    }
+
+    @Override
+    public ITimeSeriesFeed<Bar> getBarFeedInBasketCurrency(TimeSeriesFreq frequency,
+                                                         String basketCurrencyName,
+                                                         Map<String, Double> basketComposition) {
+        return basketCurrencyBarFeeds.compute(frequency,
+            (freq, v) -> new BarFeedInBasketCurrency(freq, this, basketCurrencyName, basketComposition));
     }
 
     @Override

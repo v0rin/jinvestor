@@ -1,6 +1,7 @@
 package org.jinvestor.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jinvestor.timeseriesfeed.ITimeSeriesFeed;
 import org.jinvestor.timeseriesfeed.TimeSeriesFreq;
@@ -22,5 +23,11 @@ public interface IInstrument {
     ITimeSeriesFeed<Bar> getBarDailyFeed();
 
     ITimeSeriesFeed<Bar> getBarFeed(TimeSeriesFreq frequency);
+
+    ITimeSeriesFeed<Bar> getBarDailyFeedInBasketCurrency(String basketCurrencyName,
+            Map<String, Double> basketComposition);
+
+    ITimeSeriesFeed<Bar> getBarFeedInBasketCurrency(TimeSeriesFreq frequency, String basketCurrencyName,
+            Map<String, Double> basketComposition);
 
 }
