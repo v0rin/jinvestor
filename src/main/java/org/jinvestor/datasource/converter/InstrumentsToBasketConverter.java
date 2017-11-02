@@ -21,7 +21,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 public class InstrumentsToBasketConverter implements IConverter<List<Bar>, Bar> {
 
-    private static final int DEFAULT_BAR_NOT_PRESENT_FOR_N_DAYS_WARNING_THRESHOLD = 7;
+    private static final int DEFAULT_BAR_NOT_PRESENT_FOR_N_DAYS_WARNING_THRESHOLD = 12;
 
     private static final double INSTRUMENT_COUNT_THRESHOLD_RATIO = 0.5;
 

@@ -33,7 +33,7 @@ public class BarFeedInBasketCurrencyTest {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private static final Instant FROM = Instant.parse("2010-01-01T23:59:59.999Z");
+    private static final Instant FROM = Instant.parse("1990-01-01T23:59:59.999Z");
     private static final Instant TO = Instant.parse("2010-01-14T23:59:59.999Z");
 
     private static final String BASKET_CURRENCY = BC1;
@@ -72,9 +72,9 @@ public class BarFeedInBasketCurrencyTest {
         LOG.info("elapsed=" + sw.elapsed());
 
         // then
-        bars.forEach(LOG::info);
+//        bars.forEach(LOG::info);
 
-        List<Bar> straightBars = instrument.getBarDailyFeed().stream(FROM, TO).collect(Collectors.toList());
-        straightBars.forEach(LOG::info);
+//        List<Bar> straightBars = instrument.getBarDailyFeed().stream(FROM, TO).collect(Collectors.toList());
+//        straightBars.forEach(LOG::info);
     }
 }
