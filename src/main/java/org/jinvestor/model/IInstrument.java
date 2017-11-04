@@ -1,5 +1,6 @@
 package org.jinvestor.model;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -44,4 +45,8 @@ public interface IInstrument {
                                                            String basketCurrencyName,
                                                            Map<String, Double> basketComposition,
                                                            String proxyCurrency);
+
+    String getDailyBarsInJson(Instant from, Instant to);
+
+    String getDailyBarsInJsonReduced(Instant from, Instant to);
 }

@@ -129,6 +129,17 @@
 			    <updatePolicy>never</updatePolicy>
 			</releases>
 		</repository>
+        <repository>
+            <id>http://artifacts.openmicroscopy.org/artifactory/maven/</id>
+            <name>http://artifacts.openmicroscopy.org/artifactory/maven/</name>
+            <url>http://artifacts.openmicroscopy.org/artifactory/maven/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
 		<repository>
 	      <id>jitpack</id>
 	      <name>jitpack</name>
@@ -224,7 +235,11 @@
 		    <artifactId>annotations</artifactId>
 		    <version>3.0.1</version>
 		</dependency>
-
+		<dependency>
+		  <groupId>pl.luwi</groupId>
+		  <artifactId>series-reducer</artifactId>
+		  <version>0.2.0</version>
+		</dependency>
 
         <!-- runtime -->
         <dependency>

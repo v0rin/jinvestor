@@ -1,12 +1,18 @@
 package org.jinvestor.model;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.jinvestor.datasource.converter.BarsToJsonReducingConverter;
+import org.jinvestor.datasource.converter.IConverter;
+import org.jinvestor.datasource.converter.StandardBarsToJsonConverter;
+import org.jinvestor.exception.AppRuntimeException;
 import org.jinvestor.timeseriesfeed.BarFeed;
 import org.jinvestor.timeseriesfeed.BarFeedInBasketCurrency;
 import org.jinvestor.timeseriesfeed.ITimeSeriesFeed;
@@ -26,6 +32,9 @@ public class Instrument implements IInstrument {
     private Map<TimeSeriesFreq, ITimeSeriesFeed<Bar>> barFeeds;
     private Map<TimeSeriesFreq, ITimeSeriesFeed<Bar>> basketCurrencyBarFeeds;
 
+    private IConverter<Stream<Bar>, String> barsToJsonConverter = new StandardBarsToJsonConverter();
+    private IConverter<Stream<Bar>, String> barsToJsonReducingConverter = new BarsToJsonReducingConverter();
+
     public Instrument(String symbol, String currencyCode) {
         this.symbol = symbol;
         this.aliases = new ArrayList<>();
@@ -34,6 +43,26 @@ public class Instrument implements IInstrument {
         this.description = symbol;
         this.barFeeds = new EnumMap<>(TimeSeriesFreq.class);
         this.basketCurrencyBarFeeds = new EnumMap<>(TimeSeriesFreq.class);
+    }
+
+    @Override
+    public String getDailyBarsInJson(Instant from, Instant to) {
+        try (ITimeSeriesFeed<Bar> barFeed = new BarFeed(TimeSeriesFreq.DAILY, this)) {
+            return barsToJsonConverter.apply(barFeed.stream(from, to));
+        }
+        catch (Exception e) {
+            throw new AppRuntimeException(e);
+        }
+    }
+
+    @Override
+    public String getDailyBarsInJsonReduced(Instant from, Instant to) {
+        try (ITimeSeriesFeed<Bar> barFeed = new BarFeed(TimeSeriesFreq.DAILY, this)) {
+            return barsToJsonReducingConverter.apply(barFeed.stream(from, to));
+        }
+        catch (Exception e) {
+            throw new AppRuntimeException(e);
+        }
     }
 
     @Override
