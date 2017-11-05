@@ -49,4 +49,9 @@ public interface IInstrument {
     String getDailyBarsInJson(Instant from, Instant to);
 
     String getDailyBarsInJsonReduced(Instant from, Instant to);
+
+    String getDailyBarsInBasketCurrencyInJsonReduced(Instant from, Instant to, String basketCurrencyName,
+            Map<String, Double> basketComposition);
+
+    String getDailyBarsInDefaultBasketCurrencyInJsonReduced(Instant from, Instant to);
 }

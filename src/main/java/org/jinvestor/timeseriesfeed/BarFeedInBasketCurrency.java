@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,13 +38,16 @@ public class BarFeedInBasketCurrency implements ITimeSeriesFeed<Bar> {
                                    Map<String, Double> basketComposition,
                                    String proxyCurrency) {
         this.basketComposition = basketComposition;
-        this.refCurrency = instrument.getCurrencyCode();
-        this.basketConverter = new InstrumentsToBasketConverter(basketCurrencyName, refCurrency, basketComposition);
         this.barFeed = new BarFeed(frequency, instrument);
-        if (proxyCurrency != null) {
-            IInstrument proxyInstrument = new Instrument(refCurrency, proxyCurrency);
+        if (proxyCurrency == null) {
+            this.refCurrency = instrument.getCurrencyCode();
+        }
+        else {
+            this.refCurrency = proxyCurrency;
+            IInstrument proxyInstrument = new Instrument(instrument.getCurrencyCode(), proxyCurrency);
             this.proxyCurrencyBarFeed = new BarFeed(frequency, proxyInstrument);
         }
+        this.basketConverter = new InstrumentsToBasketConverter(basketCurrencyName, refCurrency, basketComposition);
     }
 
 
@@ -67,14 +71,15 @@ public class BarFeedInBasketCurrency implements ITimeSeriesFeed<Bar> {
 
         if (proxyCurrencyBarFeed == null) {
             // spy/usd * usd/bc1 -> spy/bc1
-            return barFeed.stream(from, to).map(instrumentCurrencyConverter);
+            return barFeed.stream(from, to).map(instrumentCurrencyConverter).filter(Objects::nonNull);
         }
         else {
             // wig/pln * pln/usd -> wig/usd * usd/bc1 -> wig/bc1
             Stream<Bar> proxyCurrencyStream = proxyCurrencyBarFeed.stream(from, to);
             IConverter<Bar, Bar> proxyCurrencyConverter = new InstrumentCurrencyConverter(proxyCurrencyStream);
             return barFeed.stream(from, to).map(proxyCurrencyConverter)
-                                           .map(instrumentCurrencyConverter);
+                                           .map(instrumentCurrencyConverter)
+                                           .filter(Objects::nonNull);
         }
     }
 

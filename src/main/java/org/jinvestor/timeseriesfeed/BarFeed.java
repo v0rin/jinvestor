@@ -75,6 +75,6 @@ public class BarFeed implements ITimeSeriesFeed<Bar> {
 
     @Override
     public void close() throws Exception {
-        dbReader.close();
+        if (dbReader != null) dbReader.close();
     }
 }

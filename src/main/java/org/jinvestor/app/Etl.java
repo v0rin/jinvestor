@@ -15,7 +15,7 @@ import org.jinvestor.EtlService;
 public class Etl {
 
     private static final String DATASOURCE_ROOT_PATH = "datasource/";
-    private static final String STANDARD_DAILY_DB_PATH = "datasource/sqlite/bar_daily.sqlite";
+    private static final String STANDARD_DAILY_DB_PATH = "datasource/sqlite/bar-daily.sqlite";
 
 
     private Etl() {

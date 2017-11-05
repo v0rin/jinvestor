@@ -12,7 +12,7 @@ import org.jinvestor.exception.AppRuntimeException;
 */
 public class StaticJavaConfiguration<T extends Enum<T> & IConfigurationKey> implements IConfiguration<T> {
 
-    protected static final String BAR_DAILY_DB_CONNECTION_STRING = "jdbc:sqlite:datasource/sqlite/bar_daily.sqlite";
+    protected static final String BAR_DAILY_DB_CONNECTION_STRING = "jdbc:sqlite:datasource/sqlite/bar-daily.sqlite";
 
 
     // ##################################################################################################### //

@@ -149,7 +149,7 @@ public class InstrumentsToBasketConverter implements IConverter<List<Bar>, Bar> 
 
     private void checkBasketComposition(String refCurrency2, Map<String, Double> basketComposition2) {
         checkArgument(basketComposition2.containsKey(refCurrency2),
-                     "Reference currency not present in the basket - " + basketComposition2);
+                     "Reference currency[" + refCurrency2 +"] not present in the basket - " + basketComposition2);
         checkArgument(basketComposition2.size() > 1,
                       "There should be more than 1 symbol in the basket. It doesn't make sense otherwise" +
                       basketComposition2);

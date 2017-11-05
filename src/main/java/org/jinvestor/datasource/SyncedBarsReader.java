@@ -15,6 +15,7 @@ import org.jinvestor.exception.AppRuntimeException;
 import org.jinvestor.model.Bar;
 import org.jinvestor.model.IInstrument;
 import org.jinvestor.time.TimestampStream;
+import org.jinvestor.timeseriesfeed.ITimeSeriesFeed;
 
 import static com.google.common.base.Preconditions.checkState;
 
@@ -30,12 +31,14 @@ public class SyncedBarsReader implements IReader<List<Bar>> {
     private List<IInstrument> instruments;
     private Instant from;
     private Instant to;
+    private List<ITimeSeriesFeed<Bar>> feedsToClose;
 
 
     public SyncedBarsReader(List<IInstrument> instruments, Instant from, Instant to) {
         this.instruments = instruments;
         this.from = from;
         this.to = to;
+        this.feedsToClose = new ArrayList<>();
     }
 
 
@@ -82,7 +85,9 @@ public class SyncedBarsReader implements IReader<List<Bar>> {
         List<Iterator<Bar>> iterators = new ArrayList<>();
         instruments.stream().forEach(instrument -> {
             try {
-                Iterator<Bar> barIterator = instrument.getBarDailyFeed().stream(from, to).iterator();
+                ITimeSeriesFeed<Bar> feed = instrument.getBarDailyFeed();
+                feedsToClose.add(feed);
+                Iterator<Bar> barIterator = feed.stream(from, to).iterator();
                 iterators.add(barIterator);
             }
             catch (IOException e) {
@@ -105,8 +110,13 @@ public class SyncedBarsReader implements IReader<List<Bar>> {
 
     @Override
     public void close() throws Exception {
-        for(IInstrument instrument : instruments) {
-            instrument.getBarDailyFeed().close();
-        }
+        feedsToClose.forEach(t -> {
+            try {
+                t.close();
+            }
+            catch (Exception e) {
+                throw new AppRuntimeException(e);
+            }
+        });
     }
 }

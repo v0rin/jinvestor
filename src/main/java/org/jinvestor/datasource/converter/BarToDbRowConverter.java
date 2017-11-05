@@ -1,6 +1,9 @@
 package org.jinvestor.datasource.converter;
 
+import java.time.format.DateTimeFormatter;
+
 import org.jinvestor.model.Bar;
+import org.jinvestor.time.DateTimeFormatterFactory;
 
 /**
  *
@@ -8,11 +11,13 @@ import org.jinvestor.model.Bar;
  */
 public class BarToDbRowConverter implements IConverter<Bar, Object[]> {
 
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatterFactory.standardTimestamp();
+
     @Override
     public Object[] apply(Bar bar) {
         return new Object[] {
                 bar.getSymbol(),
-                bar.getTimestamp(),
+                FORMATTER.format(bar.getTimestamp().toLocalDateTime()),
                 bar.getOpen(),
                 bar.getHigh(),
                 bar.getLow(),
