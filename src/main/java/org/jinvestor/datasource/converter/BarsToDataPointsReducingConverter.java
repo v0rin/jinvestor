@@ -31,7 +31,7 @@ public class BarsToDataPointsReducingConverter implements IConverter<Stream<Bar>
 
         List<DataPointWithTimestamp> dataPointsWithTimestamp = null;
         if (bars.size() > targetDataPoints) {
-            dataPointsWithTimestamp = reduceDataPoints(bars, bars.size() / targetDataPoints);
+            dataPointsWithTimestamp = reduceDataPoints(bars, (double)bars.size() / targetDataPoints);
         }
         else {
             dataPointsWithTimestamp = bars.stream().map(bar -> new DataPointWithTimestamp(bar.getTimestamp(),
