@@ -3,6 +3,8 @@
 /.settings/
 /.classpath
 /.project
+/.idea
+/*.iml
 
 # maven
 /target/

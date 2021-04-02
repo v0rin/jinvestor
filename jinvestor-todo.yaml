@@ -1,0 +1,108 @@
+GOAL 1: I want to see various quotes (FX, commodities, stocks, indexes) vs currency basket - on the chart
+  create a sensible basket currency - read and consider stuff...
+
+  show charts
+    use springboot 
+      https://github.com/in28minutes/SpringBootWebApplicationStepByStep
+      http://www.springboottutorial.com/creating-web-application-with-spring-boot
+    Quandl data
+      quandl vs yahoo - stackoverflow, quora etc.
+      what data is free?
+      I could possibly use offline currency data, but stocks, commodities, indices etc. from quandl
+        I could compare the save s&p with the one from quandl
+      investigate quandl data - I have it saved, maybe I could actually use it, seems like tradingview uses it 
+        https://github.com/tradingview/yahoo_datafeed/blob/2df2d0a4763ce951374d5db04ea4c5c2d3917ec7/request-processor.js#L488
+        https://github.com/tradingview/yahoo_datafeed/blob/master/request-processor.js - function convertQuandlHistoryToUDFFormat(data)
+        
+
+    choosing instruments, in what currency etc.
+
+    Vaadin - Stuart was complementing, take another look
+    World Map
+      https://github.com/markmarkoh/datamaps/blob/master/README.md#getting-started
+      http://kartograph.org/
+      https://jqvmap.com/
+      https://www.amcharts.com/demos/
+      
+
+GOAL 2:
+  do research:
+    maybe I can use existing tools with my data, just with a converter or something
+  I want to be able to backtest trading strategies - on daily bars/ticks (at least initially) - e.g. buyDipsSellHighs
+  I want to be able to be able to feed strategies into optimizing algorithms e.g. Genetic ALgorithm, Monte Carlo
+  I want to be able to test Greenblatt's MagicFormula
+
+  research a few libs to see different approaches
+    Account
+    Has broker(type e.g accept any order)
+       Has bars
+       ‎subscribe bars
+       ‎execute order
+    Has portfolio - one or many?
+    Has journal maybe in portfolio
+    Get cash 
+    Get portfolio performance 
+    MakeOrder (opt. expiration, opt. price, allow partial exec complete callback )
+
+
+TODO LATER:
+Review time usage and all the conversions if they really work!!!
+  Timestamp to instant in the Bar - but I remember there could have been some issues with writing it automatically to db via dbUtils, but should I care?
+  how to set timezone for tests programatically - not ith JVM flag 
+switch StaticConfiguration to Properties file
+Converters should accept null values open high etc
+Bar - symbol String -> Instrument instrument -> write as instrument as well to db
+dependency injection
+indexes for bar table
+Database Connection Pooling
+  https://www.stubbornjava.com/posts/database-connection-pooling-in-java-with-hikaricp
+#############################################
+zaciagnac interestujace kawalki kodu z herschel (storm, zk)
+if the data is not in the db as requested there is an exception, maybe in the future there'd be an automatic pull from somewhere
+  this should be checked on higher level
+after I have tests - csv to db conversion, simplify by creating bar first and then writing it into db
+Class visibility qualifier as showing g official api
+  what's the recommended approach
+API - rethink factories - general refactor potentially
+  https://stackoverflow.com/questions/69849/factory-pattern-when-to-use-factory-methods
+  take a look at some open source projects https://projects.apache.org/
+  https://www.oracle.com/corporate/features/library-in-java-best-practices.html
+  https://theamiableapi.com/2012/01/16/java-api-design-checklist/
+#############################################
+teamcity - reach out teamcity-support@jetbrains.com
+  https://blog.jetbrains.com/teamcity/2016/10/hosted-teamcity-for-open-source-a-new-home/
+publish to mvnrepository
+extract things into a library with tools e.g. configuration
+
+
+
+
+COMPLETE:
+  # pull data from sqlite and convert to json to feed to js charting lib
+  # generate correct json and view it on some chart finally :)
+  # BarFeedInBasketCurrency - what if I wanted to see wig20 denominated in BC1 but stored in db in PLN - refCurrency
+  # etlservice
+  # in reader only putting bar on the correct timestamp
+  # move using last price to stateful converter
+  # conditions for combining and syncing bar streams
+    # during transformation test if every bar has the time 23.59.59.999, 
+  # get historical data
+  # pull that data into sqlite
+  # DataFeedFactory.get(Bar.class)
+  # Bar needs to contain the currency
+# update currencies in db jpyusd -> jpy
+# Instrument.getBarFeed() - AutoCloseable
+# BasketCreater and other places - AutoCloseable - close all feeds
+# iinstrument
+# instrument.getBars (from, to), getdailybars
+# Bar has symbol and currency code - strings
+# Instrument has symbol and currencyCode
+# Remove Currency.Code and Instrument.Code people using lib need to be able to define their own - Instrument.SPY, USD... public strings will be enough
+  # add findbugs and checkstyle
+  # scm versions plugin and mvn command to run it
+  # test DateFormater - at least 2 dates around midnight
+  # basic cleanup of tests - remove unnecessary, create some basic ones, maybe more high level
+  # converter dla yahoo np. stworzyc ktory korzysta z odpowiednich writerow, converterow ... 0.5h
+  # clean up the code a bit - 1h
+  # test perf get raw vs sql2o vs mypojoimpl vs tradelib- 2h
+  #set up git repo

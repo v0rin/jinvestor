@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jinvestor.ConfKeys;
 import org.jinvestor.configuration.Configuration;
 import org.jinvestor.configuration.StaticJavaConfiguration;
@@ -25,8 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class BarsToDataPointsReducingConverterTest {
-
-    private static final Logger LOG = LogManager.getLogger();
 
     private static final Instant FROM = Instant.parse("2010-01-01T23:59:59.999Z");
     private static final Instant TO_DONT_REDUCE = Instant.parse("2011-01-04T23:59:59.999Z");
